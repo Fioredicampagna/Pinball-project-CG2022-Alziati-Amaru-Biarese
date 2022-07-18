@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/fioreamaru/Downloads/Assignments/A20"
+      customWorkingDirectory = "/Users/fioreamaru/xcode/Pinball-project-CG2022-Alziati-Amaru-Biarese/MyProject"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
