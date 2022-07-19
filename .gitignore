@@ -5,3 +5,6 @@
 MyProject/MyProject.exe
 MyProject/slotProject.exe
 PinballProject.xcodeproj/
+.DS_Store
+PinballProject.xcodeproj/project.pbxproj
+PinballProject.xcodeproj/project.xcworkspace/xcuserdata/fioreamaru.xcuserdatad/UserInterfaceState.xcuserstate
