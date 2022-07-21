@@ -277,15 +277,18 @@ protected:
        
 
         // glm::vec3 oldCameraPos = cameraPos;
-        if (glfwGetKey(window, GLFW_KEY_LEFT))
+        if (glfwGetKey(window, GLFW_KEY_RIGHT))
         {
             //lookYaw += deltaT * ROT_SPEED;
             lookYaw += ROT_SPEED;
         }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT))
+        if (glfwGetKey(window, GLFW_KEY_LEFT))
         {
             //lookYaw -= deltaT * ROT_SPEED;
             lookYaw -= ROT_SPEED;
+        }
+        if(glfwGetKey(window, GLFW_KEY_ENTER)){
+            lookYaw = 0.0f;
         }/*
         if (glfwGetKey(window, GLFW_KEY_UP))
         {
