@@ -19,6 +19,16 @@ struct UniformBufferObject {
 // MAIN !
 class MyProject : public BaseProject {
     protected:
+    //variabili varie
+   
+    float speed = 0.05f;
+   
+    //Massima lunghezza della molla del puller
+    float maxPullerLenght = 0.5f;
+
+    float pullerState = 0.0f;  // 0 stato a  riposo
+                                     // 1 tensione massima     
+        
     // Here you list all the Vulkan objects you need:
     
     // Descriptor Layouts [what will be passed to the shaders]
@@ -428,8 +438,17 @@ class MyProject : public BaseProject {
         
         // ball
         updateModel(currentImage, DS_Ball, data, ubo, -0.30053f, 8.5335f, -5.9728f, 0.0f, 0.0f, 0.0f);
+
+        //Logica del tiraggio del puller
         
-         
+        if(glfwGetKey(window, GLFW_KEY_SPACE) )
+        {
+            pullerState += speed;
+            pullerState = std::min(pullerState, 1.0f);     
+        }else{
+            pullerState = 0;
+        }
+        updateModel(currentImage, DS_Puller, data, ubo,-2.5264f, 8.3925f, -7.5892f - maxPullerLenght * pullerState , 0.0f, -90.0f, 0.0f);      
     }
     
     glm::mat4 MakeWorldMatrixEuler(glm::vec3 pos, glm::vec3 YPR, glm::vec3 size) {
