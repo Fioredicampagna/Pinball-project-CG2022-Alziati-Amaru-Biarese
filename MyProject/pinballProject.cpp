@@ -27,7 +27,8 @@ protected:
 
     // Massima lunghezza della molla del puller
     float maxPullerLenght = 0.5f;
-
+    float pullerStartingPosition = -7.5892f;
+    float pullerActualPosition =  pullerStartingPosition;
     float pullerState = 0.0f; // 0 stato a  riposo
                               // 1 tensione massima
 
@@ -328,11 +329,19 @@ protected:
         {
             pullerState += speed;
             pullerState = std::min(pullerState, 1.0f);
-        }
-        else
+            pullerActualPosition = pullerStartingPosition - maxPullerLenght * pullerState;
+        }else
         {
-            pullerState = 0;
+            pullerActualPosition = pullerActualPosition + 0.1 * pullerState;
+            pullerActualPosition = std::min(pullerActualPosition, pullerStartingPosition);
+            pullerState -= speed;
+            pullerState = std::max(pullerState, 0.0f);
+
         }
+
+        std::cout << pullerActualPosition << "\n";
+
+        
 
         if (glfwGetKey(window, GLFW_KEY_A))
         {
@@ -410,7 +419,7 @@ protected:
         updateModel(currentImage, DS_Bumper3, data, ubo, -0.11626f, 9.1362f, 0.020626f, -6.51f, 0.0f, 0.0f);
 
         // puller
-        updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, -7.5892f - maxPullerLenght * pullerState, 0.0f, -90.0f, 0.0f);
+        updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, pullerActualPosition, 0.0f, -90.0f, 0.0f);
 
         // left flipper
         updateModel(currentImage, DS_LeftFlipper, data, ubo, 0.6906f, 8.4032f, -5.6357f,  leftFlipperRotation, -3.24f, -5.64f); //29.8 max rotation
