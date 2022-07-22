@@ -300,11 +300,21 @@ protected:
             //lookPitch -= deltaT * ROT_SPEED;
             lookPitch -= ROT_SPEED;
         }
-        
-        
+          
         
         glm::vec3 RFDT = glm::vec3(glm::rotate(glm::mat4(1), lookYaw, glm::vec3(0, 1, 0)) *
                                    glm::vec4(FollowerDeltaTarget, 1.0f));*/
+        updateCamera(deltaT);
+        
+        if (glfwGetKey(window, GLFW_KEY_SPACE))
+        {
+            pullerState += speed;
+            pullerState = std::min(pullerState, 1.0f);
+        }
+        else
+        {
+            pullerState = 0;
+        }
         
     
         globalUniformBufferObject gubo{};
@@ -312,9 +322,6 @@ protected:
 
         void *data;
 
-        
-        
-        
         gubo.view = glm::lookAt(cameraPos,
                                 pinballPos /*+ RFDT*/,
                                 glm::vec3(0.0f, 1.0f, 0.0f));
@@ -343,7 +350,7 @@ protected:
         updateModel(currentImage, DS_Bumper3, data, ubo, -0.11626f, 9.1362f, 0.020626f, -6.51f, 0.0f, 0.0f);
 
         // puller
-        updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, -7.5892f, 0.0f, -90.0f, 0.0f);
+        updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, -7.5892f - maxPullerLenght * pullerState, 0.0f, -90.0f, 0.0f);
 
         // left flipper
         updateModel(currentImage, DS_LeftFlipper, data, ubo, 0.6906f, 8.4032f, -5.6357f, 29.8f, -3.24f, -5.64f);
@@ -376,21 +383,9 @@ protected:
 
         // Logica del tiraggio del puller
 
-        if (glfwGetKey(window, GLFW_KEY_SPACE))
-        {
-            pullerState += speed;
-            pullerState = std::min(pullerState, 1.0f);
-        }
-        else
-        {
-            pullerState = 0;
-        }
-        updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, -7.5892f - maxPullerLenght * pullerState, 0.0f, -90.0f, 0.0f);
         
         
-        
-        updateCamera(deltaT);
-        
+    
     }
 
     
