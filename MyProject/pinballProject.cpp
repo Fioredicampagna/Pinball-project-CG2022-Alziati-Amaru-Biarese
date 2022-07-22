@@ -31,7 +31,25 @@ protected:
     float pullerState = 0.0f; // 0 stato a  riposo
                               // 1 tensione massima
 
-    
+    float leftFlipperRotation = -29.8f;
+    float maxLeftFlipperRotation = 29.8f;
+
+    bool startRotationLeft = false;
+    bool startRotationRight = false;
+
+
+    float deltaRotation = 9.0f;
+
+    float rightFlipperRotation = -150.0f;
+    float maxRightFlipperRotation = -210.0f;
+
+
+    float buttonDepth = 0.03f;
+    bool buttonLeftPressed = false;
+    bool buttonRightPressed = false;
+
+
+
     // variabili per la matrice camera
     glm::vec3 cameraPos = glm::vec3(0.0f, 17.0f, -15.0f);
     glm::vec3 pinballPos = glm::vec3(0.0f, 7.0f, 0.0f);
@@ -315,8 +333,50 @@ protected:
         {
             pullerState = 0;
         }
-        
+
+        if (glfwGetKey(window, GLFW_KEY_A))
+        {
+            startRotationLeft = true;
+            buttonLeftPressed = true;
+            
+        }else{
+            buttonLeftPressed = false;
+
+        }
+
+          if (glfwGetKey(window, GLFW_KEY_L))
+        {
+            startRotationRight = true;
+            buttonRightPressed = true;            
+        }else{
+            buttonRightPressed = false;
+
+        }
     
+        
+        if(startRotationLeft )
+        {
+            leftFlipperRotation += deltaRotation; 
+            leftFlipperRotation = std::min(leftFlipperRotation, maxLeftFlipperRotation);
+            if(leftFlipperRotation >= maxLeftFlipperRotation || !glfwGetKey(window, GLFW_KEY_A) )
+                startRotationLeft = false;
+        }else if(!glfwGetKey(window, GLFW_KEY_A)){
+            leftFlipperRotation -= deltaRotation; 
+            leftFlipperRotation = std::max(leftFlipperRotation, -maxLeftFlipperRotation);
+        }
+
+
+        if(startRotationRight )
+        {
+            rightFlipperRotation -= deltaRotation; 
+            rightFlipperRotation = std::max(rightFlipperRotation, maxRightFlipperRotation);
+            if(rightFlipperRotation <= maxRightFlipperRotation || !glfwGetKey(window, GLFW_KEY_L) )
+                startRotationRight = false;
+        }else if(!glfwGetKey(window, GLFW_KEY_L)){
+            rightFlipperRotation += deltaRotation; 
+            rightFlipperRotation = std::min(rightFlipperRotation, maxRightFlipperRotation +60.0f);
+        }
+
         globalUniformBufferObject gubo{};
         UniformBufferObject ubo{};
 
@@ -353,16 +413,16 @@ protected:
         updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, -7.5892f - maxPullerLenght * pullerState, 0.0f, -90.0f, 0.0f);
 
         // left flipper
-        updateModel(currentImage, DS_LeftFlipper, data, ubo, 0.6906f, 8.4032f, -5.6357f, 29.8f, -3.24f, -5.64f);
+        updateModel(currentImage, DS_LeftFlipper, data, ubo, 0.6906f, 8.4032f, -5.6357f,  leftFlipperRotation, -3.24f, -5.64f); //29.8 max rotation
 
         // right flipper
-        updateModel(currentImage, DS_RightFlipper, data, ubo, -1.307f, 8.4032f, -5.6357f, 150.0f, -3.24f, -5.64f);
+        updateModel(currentImage, DS_RightFlipper, data, ubo, -1.307f, 8.4032f, -5.6357f, rightFlipperRotation, -3.24f, -5.64f); //150f max rotation
 
         // left button
-        updateModel(currentImage, DS_LeftButton, data, ubo, 2.6175f, 8.7853f, -6.6902f, 0.0f, 0.0f, -90.0f);
+        updateModel(currentImage, DS_LeftButton, data, ubo, 2.6175f - buttonDepth * buttonLeftPressed, 8.7853f, -6.6902f, 0.0f, 0.0f, -90.0f);
 
         // right button
-        updateModel(currentImage, DS_RightButton, data, ubo, -2.97f, 8.7853f, -6.6902f, 0.0f, 0.0f, 90.0f);
+        updateModel(currentImage, DS_RightButton, data, ubo, -2.97f + buttonDepth * buttonRightPressed, 8.7853f, -6.6902f, 0.0f, 0.0f, 90.0f);
 
         // Score: 12 digits
         updateModel(currentImage, DS_DL1, data, ubo, 0.4366f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
