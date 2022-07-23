@@ -1,6 +1,8 @@
 // This has been adapted from the Vulkan tutorial
 
 #include "MyProject.hpp"
+#include "game_object.h"
+#include "ball_object.h"
 
 const std::string MODEL_PATH = "models/PinballDark/";
 const std::string TEXTURE_PATH = "textures/StarWarsPinball.png";
@@ -17,6 +19,7 @@ struct UniformBufferObject
     alignas(16) glm::mat4 model;
 };
 
+
 // MAIN !
 class MyProject : public BaseProject
 {
@@ -28,7 +31,7 @@ protected:
     // Massima lunghezza della molla del puller
     float maxPullerLenght = 0.5f;
     float pullerStartingPosition = -7.5892f;
-    float pullerActualPosition =  pullerStartingPosition;
+    float pullerActualPosition = pullerStartingPosition;
     float pullerState = 0.0f; // 0 stato a  riposo
                               // 1 tensione massima
 
@@ -38,30 +41,25 @@ protected:
     bool startRotationLeft = false;
     bool startRotationRight = false;
 
-
     float deltaRotation = 9.0f;
 
     float rightFlipperRotation = -150.0f;
     float maxRightFlipperRotation = -210.0f;
 
-
     float buttonDepth = 0.03f;
     bool buttonLeftPressed = false;
     bool buttonRightPressed = false;
-    
+
     float alfa = 0.1288712254f;
     float ballStartz = 9.0f;
     float ballStartx = 0.0f;
-    float ballStarty =  8.4032f +std::abs(ballStartz - -5.9728f) * std::tan(alfa);
+    float ballStarty = 8.4032f + std::abs(ballStartz - -5.9728f) * std::tan(alfa);
     float dz = 0.0f;
     float dy = 0.0f;
     float dx = 0.0f;
 
-
-    float vz = 0.0f ;
-    float vy = 0.0f ;
-
-
+    float vz = 0.0f;
+    float vy = 0.0f;
 
     // variabili per la matrice camera
     glm::vec3 cameraPos = glm::vec3(0.0f, 17.0f, -15.0f);
@@ -135,6 +133,11 @@ protected:
 
     DescriptorSet DS_global;
 
+   // game objects
+    
+    GameObject bumper1, bumper2, bumper3, leftFlipper, rightFlipper, puller;
+    BallObject ball;
+    
     // Here you set the main application parameters
     void setWindowParameters()
     {
@@ -187,20 +190,41 @@ protected:
         DS_Bumper2.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_Bumper3.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
 
+        glm::vec3 bumperSize = getSize(M_Bumper);
+        
+        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f));
+        
+        bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f));
+        
+        bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f));
+        
         M_Puller.init(this, MODEL_PATH + "Puller.obj");
         DS_Puller.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
+        
+        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), getSize(M_Puller), glm::vec3(0.0f, -90.0f, 0.0f));
+        
 
         M_Flipper.init(this, MODEL_PATH + "RightFlipper.obj");
         DS_LeftFlipper.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_RightFlipper.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
-
+        
+        glm::vec3 flipperSize =  getSize(M_Flipper);
+         
+        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), flipperSize, glm::vec3(leftFlipperRotation, -3.24f, -5.64f));
+        
+        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), flipperSize, glm::vec3(rightFlipperRotation, -3.24f, -5.64f));
+         
+        
         M_Button.init(this, MODEL_PATH + "RightButton.obj");
         DS_LeftButton.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_RightButton.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
 
         M_Ball.init(this, MODEL_PATH + "Ball.obj");
         DS_Ball.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
-
+        
+        ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), getRadius(M_Ball), glm::vec3(0.0f, 0.0f, 0.0f) );
+        
+       
         M_Score.init(this, MODEL_PATH + "DL6.obj");
         DS_DL1.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_DL2.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
@@ -297,6 +321,7 @@ protected:
     // Very likely this will be where you will be writing the logic of your application.
     void updateUniformBuffer(uint32_t currentImage)
     {
+
         static auto startTime = std::chrono::high_resolution_clock::now();
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
@@ -307,98 +332,18 @@ protected:
 
        
 
-        // glm::vec3 oldCameraPos = cameraPos;
-        if (glfwGetKey(window, GLFW_KEY_RIGHT))
-        {
-            //lookYaw += deltaT * ROT_SPEED;
-            lookYaw += ROT_SPEED;
-        }
-        if (glfwGetKey(window, GLFW_KEY_LEFT))
-        {
-            //lookYaw -= deltaT * ROT_SPEED;
-            lookYaw -= ROT_SPEED;
-        }
-        if(glfwGetKey(window, GLFW_KEY_ENTER)){
-            lookYaw = 0.0f;
-        }/*
-        if (glfwGetKey(window, GLFW_KEY_UP))
-        {
-            //lookPitch += deltaT * ROT_SPEED;
-            lookPitch += ROT_SPEED;
-        }
-        if (glfwGetKey(window, GLFW_KEY_DOWN))
-        {
-            //lookPitch -= deltaT * ROT_SPEED;
-            lookPitch -= ROT_SPEED;
-        }
-          
-        
-        glm::vec3 RFDT = glm::vec3(glm::rotate(glm::mat4(1), lookYaw, glm::vec3(0, 1, 0)) *
-                                   glm::vec4(FollowerDeltaTarget, 1.0f));*/
+
+         /* glm::vec3 RFDT = glm::vec3(glm::rotate(glm::mat4(1), lookYaw, glm::vec3(0, 1, 0)) *
+                                    glm::vec4(FollowerDeltaTarget, 1.0f));*/
         updateCamera(deltaT);
+
+        updatePuller();
         
-        if (glfwGetKey(window, GLFW_KEY_SPACE))
-        {
-            pullerState += speed;
-            pullerState = std::min(pullerState, 1.0f);
-            pullerActualPosition = pullerStartingPosition - maxPullerLenght * pullerState;
-        }else
-        {
-            pullerActualPosition = pullerActualPosition + 0.1 * pullerState;
-            pullerActualPosition = std::min(pullerActualPosition, pullerStartingPosition);
-            pullerState -= speed;
-            pullerState = std::max(pullerState, 0.0f);
-
-        }
-
+        updateFlippers();
         
-
-        
-
-        if (glfwGetKey(window, GLFW_KEY_A))
-        {
-            startRotationLeft = true;
-            buttonLeftPressed = true;
-            
-        }else{
-            buttonLeftPressed = false;
-
-        }
-
-          if (glfwGetKey(window, GLFW_KEY_L))
-        {
-            startRotationRight = true;
-            buttonRightPressed = true;            
-        }else{
-            buttonRightPressed = false;
-
-        }
-    
-        
-        if(startRotationLeft )
-        {
-            leftFlipperRotation += deltaRotation; 
-            leftFlipperRotation = std::min(leftFlipperRotation, maxLeftFlipperRotation);
-            if(leftFlipperRotation >= maxLeftFlipperRotation || !glfwGetKey(window, GLFW_KEY_A) )
-                startRotationLeft = false;
-        }else if(!glfwGetKey(window, GLFW_KEY_A)){
-            leftFlipperRotation -= deltaRotation; 
-            leftFlipperRotation = std::max(leftFlipperRotation, -maxLeftFlipperRotation);
-        }
-
-
-        if(startRotationRight )
-        {
-            rightFlipperRotation -= deltaRotation; 
-            rightFlipperRotation = std::max(rightFlipperRotation, maxRightFlipperRotation);
-            if(rightFlipperRotation <= maxRightFlipperRotation || !glfwGetKey(window, GLFW_KEY_L) )
-                startRotationRight = false;
-        }else if(!glfwGetKey(window, GLFW_KEY_L)){
-            rightFlipperRotation += deltaRotation; 
-            rightFlipperRotation = std::min(rightFlipperRotation, maxRightFlipperRotation +60.0f);
-        }
-
         updateBallPosition();
+        
+        
 
         globalUniformBufferObject gubo{};
         UniformBufferObject ubo{};
@@ -418,61 +363,10 @@ protected:
         memcpy(data, &gubo, sizeof(gubo));
         vkUnmapMemory(device, DS_global.uniformBuffersMemory[0][currentImage]);
 
-        // Pinball Body
-        ubo.model = glm::mat4(1.0f);
-
-        mapAndUnmap(currentImage, DS_PinballBody, data, ubo);
-
-        // bumpers
-        updateModel(currentImage, DS_Bumper1, data, ubo, 1.1819f, 9.1362f, 0.020626f, -6.51f, 0.0f, 0.0f);
-
-        // bumper 2
-        updateModel(currentImage, DS_Bumper2, data, ubo, -1.5055f, 9.1362f, 0.020626f, -6.51f, 0.0f, 0.0f);
-
-        // bumper 3
-        updateModel(currentImage, DS_Bumper3, data, ubo, -0.11626f, 9.1362f, 0.020626f, -6.51f, 0.0f, 0.0f);
-
-        // puller
-        updateModel(currentImage, DS_Puller, data, ubo, -2.5264f, 8.3925f, pullerActualPosition, 0.0f, -90.0f, 0.0f);
-
-        // left flipper
-        updateModel(currentImage, DS_LeftFlipper, data, ubo, 0.6906f, 8.4032f, -5.6357f,  leftFlipperRotation, -3.24f, -5.64f); //29.8 max rotation
-
-        // right flipper
-        updateModel(currentImage, DS_RightFlipper, data, ubo, -1.307f, 8.4032f, -5.6357f, rightFlipperRotation, -3.24f, -5.64f); //150f max rotation
-
-        // left button
-        updateModel(currentImage, DS_LeftButton, data, ubo, 2.6175f - buttonDepth * buttonLeftPressed, 8.7853f, -6.6902f, 0.0f, 0.0f, -90.0f);
-
-        // right button
-        updateModel(currentImage, DS_RightButton, data, ubo, -2.97f + buttonDepth * buttonRightPressed, 8.7853f, -6.6902f, 0.0f, 0.0f, 90.0f);
-
-        // Score: 12 digits
-        updateModel(currentImage, DS_DL1, data, ubo, 0.4366f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DL2, data, ubo, 0.713f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DL3, data, ubo, 0.9923f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DL4, data, ubo, 1.3917f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DL5, data, ubo, 1.6681f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DL6, data, ubo, 1.9474f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DR1, data, ubo, -2.8273f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DR2, data, ubo, -2.5509f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DR3, data, ubo, -2.2716f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DR4, data, ubo, -1.8722f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DR5, data, ubo, -1.5958f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-        updateModel(currentImage, DS_DR6, data, ubo, -1.316f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
-       // updateModel(currentImage, DS_Ball, data, ubo, -0.30053f +dx ,8.5335f -dy , 0.0f - dz, 0.0f, 0.0f, 0.0f);
-        updateModel(currentImage, DS_Ball, data, ubo, ballStartx +dx ,std::max(ballStarty -dy , 8.4032f ), std::max(ballStartz - dz, -5.6352f), 0.0f, 0.0f, 0.0f);
-
-        // ball
-        // Logica del tiraggio del puller
-
-        std::cout << ballStarty -dy  << std::max(ballStartz - dz, -5.6352f) << "\n ";
         
-    
+        updateScene(currentImage, data, ubo);
     }
 
-    
-    
     glm::mat4 MakeWorldMatrixEuler(glm::vec3 pos, glm::vec3 YPR, glm::vec3 size)
     {
         glm::mat4 out = glm::translate(glm::mat4(1.0), pos) * glm::rotate(glm::mat4(1.0), glm::radians(YPR.x), glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.0), glm::radians(YPR.y), glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.0), glm::radians(YPR.z), glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0), size);
@@ -534,51 +428,198 @@ protected:
         vkUnmapMemory(device, DS.uniformBuffersMemory[0][currentImage]);
     }
 
-    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, float x, float y, float z, float Rx, float Ry, float Rz)
+    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation)
     {
-        ubo.model = MakeWorldMatrixEuler(glm::vec3(x, y, z), glm::vec3(Rx, Ry, Rz), glm::vec3(1.0f));
+        ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
 
         mapAndUnmap(currentImage, DS, data, ubo);
     }
     
-    void updateCamera(float deltaT){
-        glm::vec3 FollowerTargetPos;
+    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, GameObject object, Model model)
+    {
+        ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
+
+        object.Size = getSize(model, ubo.model);
         
+        
+        mapAndUnmap(currentImage, DS, data, ubo);
+    }
+    
+    void updateScene(int currentImage, void *data, UniformBufferObject ubo){
+        // Pinball Body
+        
+        updateModel(currentImage, DS_PinballBody, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        
+        // bumper 1
+        
+        updateModel(currentImage, DS_Bumper1, data, ubo, bumper1.Position, bumper1.Rotation);
+
+        // bumper 2
+        
+        updateModel(currentImage, DS_Bumper2, data, ubo, bumper2.Position, bumper2.Rotation);
+
+        // bumper 3
+        
+        updateModel(currentImage, DS_Bumper3, data, ubo, bumper3.Position, bumper3.Rotation);
+
+        // puller
+        
+        updateModel(currentImage, DS_Puller, data, ubo, puller.Position, puller.Rotation, puller, M_Puller);
+
+        // left flipper
+        
+        
+        updateModel(currentImage, DS_LeftFlipper, data, ubo, leftFlipper.Position, leftFlipper.Rotation, leftFlipper, M_Flipper); // 29.8 max rotation
+        
+
+        // right flipper
+        
+        
+        updateModel(currentImage, DS_RightFlipper, data, ubo, rightFlipper.Position, rightFlipper.Rotation, rightFlipper, M_Flipper); // 150f max rotation
+
+        // left button
+        updateModel(currentImage, DS_LeftButton, data, ubo, glm::vec3(2.6175f - buttonDepth * buttonLeftPressed, 8.7853f, -6.6902f), glm::vec3(0.0f, 0.0f, -90.0f));
+
+        // right button
+        updateModel(currentImage, DS_RightButton, data, ubo, glm::vec3(-2.97f + buttonDepth * buttonRightPressed, 8.7853f, -6.6902f), glm::vec3(0.0f, 0.0f, 90.0f));
+
+        // Score: 12 digits
+        updateModel(currentImage, DS_DL1, data, ubo, glm::vec3(0.4366f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DL2, data, ubo, glm::vec3(0.713f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DL3, data, ubo, glm::vec3(0.9923f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DL4, data, ubo, glm::vec3(1.3917f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DL5, data, ubo, glm::vec3(1.6681f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DL6, data, ubo, glm::vec3(1.9474f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DR1, data, ubo, glm::vec3(-2.8273f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DR2, data, ubo, glm::vec3(-2.5509f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DR3, data, ubo, glm::vec3(-2.2716f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DR4, data, ubo, glm::vec3(-1.8722f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DR5, data, ubo, glm::vec3(-1.5958f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        updateModel(currentImage, DS_DR6, data, ubo, glm::vec3(-1.316f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
+        
+        
+        
+        // ball
+        
+        updateModel(currentImage, DS_Ball, data, ubo, ball.Position, glm::vec3(0.0f, 0.0f, 0.0f));
+    }
+
+    void updateCamera(float deltaT)
+    {
+        
+        // camera update
+        if (glfwGetKey(window, GLFW_KEY_RIGHT))
+        {
+            // lookYaw += deltaT * ROT_SPEED;
+            lookYaw += ROT_SPEED;
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT))
+        {
+            // lookYaw -= deltaT * ROT_SPEED;
+            lookYaw -= ROT_SPEED;
+        }
+        if (glfwGetKey(window, GLFW_KEY_ENTER))
+        {
+            lookYaw = 0.0f;
+        } /*
+         if (glfwGetKey(window, GLFW_KEY_UP))
+         {
+             //lookPitch += deltaT * ROT_SPEED;
+             lookPitch += ROT_SPEED;
+         }
+         if (glfwGetKey(window, GLFW_KEY_DOWN))
+         {
+             //lookPitch -= deltaT * ROT_SPEED;
+             lookPitch -= ROT_SPEED;
+         } */
+        
+        glm::vec3 FollowerTargetPos;
+
         glm::mat4 pinballWM = glm::rotate(glm::translate(glm::mat4(1), pinballPos),
-                               lookYaw, glm::vec3(0,1,0));
+                                          lookYaw, glm::vec3(0, 1, 0));
         FollowerTargetPos = pinballWM * glm::translate(glm::mat4(1), FollowerDeltaTarget) *
-                            glm::rotate(glm::mat4(1), lookPitch, glm::vec3(1,0,0)) *
-                            glm::vec4(0.0f,0.0f,followerDist,1.0f);
+                            glm::rotate(glm::mat4(1), lookPitch, glm::vec3(1, 0, 0)) *
+                            glm::vec4(0.0f, 0.0f, followerDist, 1.0f);
         const float followerFilterCoeff = 7;
         float alpha = fmin(followerFilterCoeff * deltaT, 1.0f);
         cameraPos = cameraPos * (1.0f - alpha) + alpha * FollowerTargetPos;
     }
-
-
-
-  /*  float updateBallPosition( float dz)
-    {
-
-
-         
-       
-        float z = -5.9728f;
-         
-         dz =  std::max(dz - a ,0.0f);
-         if(dz == 0)
-            a = startingAcceleration;
+    
+    void updatePuller(){
+        // Logica del tiraggio del puller
+        if (glfwGetKey(window, GLFW_KEY_SPACE))
+        {
+            pullerState += speed;
+            pullerState = std::min(pullerState, 1.0f);
+            pullerActualPosition = pullerStartingPosition - maxPullerLenght * pullerState;
+        }
         else
-             a = a + 0.005f;
-        std::cout << a << "\n";
-        return dz;
+        {
+            pullerActualPosition = pullerActualPosition + 0.1 * pullerState;
+            pullerActualPosition = std::min(pullerActualPosition, pullerStartingPosition);
+            pullerState -= speed;
+            pullerState = std::max(pullerState, 0.0f);
+        }
+        puller.Position = glm::vec3(-2.5264f, 8.3925f, pullerActualPosition);
+    }
+    
+    void updateFlippers() {
+        if (glfwGetKey(window, GLFW_KEY_A))
+        {
+            startRotationLeft = true;
+            buttonLeftPressed = true;
+        }
+        else
+        {
+            buttonLeftPressed = false;
+        }
 
-    }*/
+        if (glfwGetKey(window, GLFW_KEY_L))
+        {
+            startRotationRight = true;
+            buttonRightPressed = true;
+        }
+        else
+        {
+            buttonRightPressed = false;
+        }
 
- void updateBallPosition( )
+        if (startRotationLeft)
+        {
+            leftFlipperRotation += deltaRotation;
+            leftFlipperRotation = std::min(leftFlipperRotation, maxLeftFlipperRotation);
+            if (leftFlipperRotation >= maxLeftFlipperRotation || !glfwGetKey(window, GLFW_KEY_A))
+                startRotationLeft = false;
+        }
+        else if (!glfwGetKey(window, GLFW_KEY_A))
+        {
+            leftFlipperRotation -= deltaRotation;
+            leftFlipperRotation = std::max(leftFlipperRotation, -maxLeftFlipperRotation);
+        }
+
+        if (startRotationRight)
+        {
+            rightFlipperRotation -= deltaRotation;
+            rightFlipperRotation = std::max(rightFlipperRotation, maxRightFlipperRotation);
+            if (rightFlipperRotation <= maxRightFlipperRotation || !glfwGetKey(window, GLFW_KEY_L))
+                startRotationRight = false;
+        }
+        else if (!glfwGetKey(window, GLFW_KEY_L))
+        {
+            rightFlipperRotation += deltaRotation;
+            rightFlipperRotation = std::min(rightFlipperRotation, maxRightFlipperRotation + 60.0f);
+        }
+        
+        leftFlipper.Rotation = glm::vec3(leftFlipperRotation, -3.24f, -5.64f);
+        rightFlipper.Rotation = glm::vec3(rightFlipperRotation, -3.24f, -5.64f);
+    }
+
+    
+    void updateBallPosition()
     {
 
-        float dt =0.3f ;
-       
+        float dt = 0.3f;
+
         float z = -5.9728f;
 
         float apiano = 9.8f * sin(alfa);
@@ -586,17 +627,113 @@ protected:
         float ay = apiano * sin(alfa);
         float az = apiano * cos(alfa);
 
-
-        
         dz = vz * dt + 0.5f * az * std::pow(dt, 2);
-        vz +=    0.5f * az * dt;
+        vz += 0.5f * az * dt;
 
-        dy = vy*dt + 0.5 * az * std::pow(dt, 2) ;
-        vy +=    0.5 * ay * dt;
-
-
+        dy = vy * dt + 0.5 * az * std::pow(dt, 2);
+        vy += 0.5 * ay * dt;
+        
+        ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f));
     }
 
+    bool CheckCollision(BallObject &ball, GameObject &other) // AABB - Circle collision
+    {
+        // get center point circle first
+        glm::vec3 center(ball.Position + ball.Radius);
+        // calculate AABB info (center, half-extents)
+        glm::vec3 aabb_half_extents(other.Size.x / 2.0f, other.Size.y / 2.0f, other.Size.z / 2.0f);
+        
+        glm::vec3 aabb_center(
+            other.Position.x + aabb_half_extents.x,
+            other.Position.y + aabb_half_extents.y,
+            other.Position.z + aabb_half_extents.z);
+        // get difference vector between both centers
+        glm::vec3 difference = center - aabb_center;
+        glm::vec3 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+        // add clamped value to AABB_center and we get the value of box closest to circle
+        glm::vec3 closest = aabb_center + clamped;
+        // retrieve vector between center circle and closest point AABB and check if length <= radius
+        difference = closest - center;
+        return glm::length(difference) < ball.Radius;
+    }
+
+    glm::vec3 getSize(Model model)
+    {
+        float
+            min_x,
+            max_x,
+            min_y, max_y,
+            min_z, max_z;
+        min_x = max_x = model.vertices[0].pos.x;
+        min_y = max_y = model.vertices[0].pos.y;
+        min_z = max_z = model.vertices[0].pos.z;
+        for (int i = 0; i < model.vertices.size(); i++)
+        {
+            if (model.vertices[i].pos.x < min_x)
+                min_x = model.vertices[i].pos.x;
+            if (model.vertices[i].pos.x > max_x)
+                max_x = model.vertices[i].pos.x;
+            if (model.vertices[i].pos.y < min_y)
+                min_y = model.vertices[i].pos.y;
+            if (model.vertices[i].pos.y > max_y)
+                max_y = model.vertices[i].pos.y;
+            if (model.vertices[i].pos.z < min_z)
+                min_z = model.vertices[i].pos.z;
+            if (model.vertices[i].pos.z > max_z)
+                max_z = model.vertices[i].pos.z;
+        }
+        return glm::vec3(max_x - min_x, max_y - min_y, max_z - min_z);
+    }
+    
+    glm::vec3 getSize(Model model, glm::mat4 transformMatrix)
+    {
+        float
+            min_x,
+            max_x,
+            min_y, max_y,
+            min_z, max_z;
+        min_x = max_x =  model.vertices[0].pos.x;
+        min_y = max_y =  model.vertices[0].pos.y;
+        min_z = max_z =  model.vertices[0].pos.z;
+        
+        
+        for (int i = 0; i < model.vertices.size(); i++)
+        {
+            model.vertices[i].pos = glm::vec3(transformMatrix * glm::vec4(model.vertices[i].pos, 0.0));
+            if (model.vertices[i].pos.x < min_x)
+                min_x = model.vertices[i].pos.x;
+            if (model.vertices[i].pos.x > max_x)
+                max_x = model.vertices[i].pos.x;
+            if (model.vertices[i].pos.y < min_y)
+                min_y = model.vertices[i].pos.y;
+            if (model.vertices[i].pos.y > max_y)
+                max_y = model.vertices[i].pos.y;
+            if (model.vertices[i].pos.z < min_z)
+                min_z = model.vertices[i].pos.z;
+            if (model.vertices[i].pos.z > max_z)
+                max_z = model.vertices[i].pos.z;
+        }
+        return glm::vec3(max_x - min_x, max_y - min_y, max_z - min_z);
+    }
+
+    float getRadius(Model model)
+    {
+        float max_x;
+        int max_x_index = 0;
+        max_x = model.vertices[0].pos.x;
+        for (int i = 0; i < model.vertices.size(); i++)
+        {
+            if (model.vertices[i].pos.x > max_x)
+            {
+                max_x = model.vertices[i].pos.x;
+                max_x_index = i;
+            }
+        }
+
+        glm::vec3 distance = glm::vec3(0.0f) - model.vertices[max_x_index].pos;
+
+        return glm::length(distance);
+    }
 };
 
 // This is the main: probably you do not need to touch this!
