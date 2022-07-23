@@ -48,6 +48,18 @@ protected:
     float buttonDepth = 0.03f;
     bool buttonLeftPressed = false;
     bool buttonRightPressed = false;
+    
+    float alfa = 0.1288712254f;
+    float ballStartz = 9.0f;
+    float ballStartx = 0.0f;
+    float ballStarty =  8.4032f +std::abs(ballStartz - -5.9728f) * std::tan(alfa);
+    float dz = 0.0f;
+    float dy = 0.0f;
+    float dx = 0.0f;
+
+
+    float vz = 0.0f ;
+    float vy = 0.0f ;
 
 
 
@@ -339,7 +351,7 @@ protected:
 
         }
 
-        std::cout << pullerActualPosition << "\n";
+        
 
         
 
@@ -385,6 +397,8 @@ protected:
             rightFlipperRotation += deltaRotation; 
             rightFlipperRotation = std::min(rightFlipperRotation, maxRightFlipperRotation +60.0f);
         }
+
+        updateBallPosition();
 
         globalUniformBufferObject gubo{};
         UniformBufferObject ubo{};
@@ -446,13 +460,13 @@ protected:
         updateModel(currentImage, DS_DR4, data, ubo, -1.8722f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
         updateModel(currentImage, DS_DR5, data, ubo, -1.5958f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
         updateModel(currentImage, DS_DR6, data, ubo, -1.316f, 12.789f, 4.1852f, 0.0f, -101.0f, 0.0f);
+       // updateModel(currentImage, DS_Ball, data, ubo, -0.30053f +dx ,8.5335f -dy , 0.0f - dz, 0.0f, 0.0f, 0.0f);
+        updateModel(currentImage, DS_Ball, data, ubo, ballStartx +dx ,std::max(ballStarty -dy , 8.4032f ), std::max(ballStartz - dz, -5.6352f), 0.0f, 0.0f, 0.0f);
 
         // ball
-        updateModel(currentImage, DS_Ball, data, ubo, -0.30053f, 8.5335f, -5.9728f, 0.0f, 0.0f, 0.0f);
-
         // Logica del tiraggio del puller
 
-        
+        std::cout << ballStarty -dy  << std::max(ballStartz - dz, -5.6352f) << "\n ";
         
     
     }
@@ -539,6 +553,50 @@ protected:
         float alpha = fmin(followerFilterCoeff * deltaT, 1.0f);
         cameraPos = cameraPos * (1.0f - alpha) + alpha * FollowerTargetPos;
     }
+
+
+
+  /*  float updateBallPosition( float dz)
+    {
+
+
+         
+       
+        float z = -5.9728f;
+         
+         dz =  std::max(dz - a ,0.0f);
+         if(dz == 0)
+            a = startingAcceleration;
+        else
+             a = a + 0.005f;
+        std::cout << a << "\n";
+        return dz;
+
+    }*/
+
+ void updateBallPosition( )
+    {
+
+        float dt =0.3f ;
+       
+        float z = -5.9728f;
+
+        float apiano = 9.8f * sin(alfa);
+
+        float ay = apiano * sin(alfa);
+        float az = apiano * cos(alfa);
+
+
+        
+        dz = vz * dt + 0.5f * az * std::pow(dt, 2);
+        vz +=    0.5f * az * dt;
+
+        dy = vy*dt + 0.5 * az * std::pow(dt, 2) ;
+        vy +=    0.5 * ay * dt;
+
+
+    }
+
 };
 
 // This is the main: probably you do not need to touch this!
