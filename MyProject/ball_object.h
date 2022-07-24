@@ -33,6 +33,46 @@ public:
     //glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
     //void      Reset(glm::vec3 position, glm::vec2 velocity);
+    
+    void getRadius()
+    {
+        float max_x;
+        int max_x_index = 0;
+        max_x = Model.vertices[0].pos.x;
+        for (int i = 0; i < Model.vertices.size(); i++)
+        {
+            if (Model.vertices[i].pos.x > max_x)
+            {
+                max_x = Model.vertices[i].pos.x;
+                max_x_index = i;
+            }
+        }
+
+        glm::vec3 distance = glm::vec3(0.0f) - Model.vertices[max_x_index].pos;
+
+        Radius = glm::length(distance);
+    }
+    
+    bool CheckCollision(GameObject &other) // AABB - Circle collision
+    {
+        // get center point circle first
+        glm::vec3 center(this->Position + this->Radius);
+        // calculate AABB info (center, half-extents)
+        glm::vec3 aabb_half_extents(other.Size.x / 2.0f, other.Size.y / 2.0f, other.Size.z / 2.0f);
+        
+        glm::vec3 aabb_center(
+            other.Position.x + aabb_half_extents.x,
+            other.Position.y + aabb_half_extents.y,
+            other.Position.z + aabb_half_extents.z);
+        // get difference vector between both centers
+        glm::vec3 difference = center - aabb_center;
+        glm::vec3 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+        // add clamped value to AABB_center and we get the value of box closest to circle
+        glm::vec3 closest = aabb_center + clamped;
+        // retrieve vector between center circle and closest point AABB and check if length <= radius
+        difference = closest - center;
+        return glm::length(difference) < this->Radius;
+    }
 };
 
 #endif

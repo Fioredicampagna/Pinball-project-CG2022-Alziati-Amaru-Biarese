@@ -190,9 +190,13 @@ protected:
         DS_Bumper2.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_Bumper3.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
 
-        glm::vec3 bumperSize = getSize(M_Bumper);
         
-        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        
+        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), glm::vec3(0.0f) , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        
+        bumper1.getSize();
+        
+        glm::vec3 bumperSize = bumper1.Size;
         
         bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
         
@@ -201,16 +205,20 @@ protected:
         M_Puller.init(this, MODEL_PATH + "Puller.obj");
         DS_Puller.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         
-        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), getSize(M_Puller), glm::vec3(0.0f, -90.0f, 0.0f), M_Puller);
+        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), glm::vec3(0.0f), glm::vec3(0.0f, -90.0f, 0.0f), M_Puller);
+        
+        puller.getSize();
         
 
         M_Flipper.init(this, MODEL_PATH + "RightFlipper.obj");
         DS_LeftFlipper.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_RightFlipper.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         
-        glm::vec3 flipperSize =  getSize(M_Flipper);
+        
          
-        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), flipperSize, glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
+        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), glm::vec3(0.0f), glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
+        leftFlipper.getSize();
+        glm::vec3 flipperSize =  leftFlipper.Size;
         
         rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), flipperSize, glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
          
@@ -222,7 +230,8 @@ protected:
         M_Ball.init(this, MODEL_PATH + "Ball.obj");
         DS_Ball.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         
-        ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), getRadius(M_Ball), glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
+        ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
+        ball.getRadius();
         
        
         M_Score.init(this, MODEL_PATH + "DL6.obj");
@@ -439,7 +448,7 @@ protected:
     {
         ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
 
-        object.Size = getSize(model, ubo.model);
+        object.getSize(ubo.model);
         
         
         mapAndUnmap(currentImage, DS, data, ubo);
@@ -620,7 +629,7 @@ protected:
 
         float dt = 0.3f;
 
-        float z = -5.9728f;
+        //float z = -5.9728f;
 
         float apiano = 9.8f * sin(alfa);
 
@@ -636,104 +645,6 @@ protected:
         ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f));
     }
 
-    bool CheckCollision(BallObject &ball, GameObject &other) // AABB - Circle collision
-    {
-        // get center point circle first
-        glm::vec3 center(ball.Position + ball.Radius);
-        // calculate AABB info (center, half-extents)
-        glm::vec3 aabb_half_extents(other.Size.x / 2.0f, other.Size.y / 2.0f, other.Size.z / 2.0f);
-        
-        glm::vec3 aabb_center(
-            other.Position.x + aabb_half_extents.x,
-            other.Position.y + aabb_half_extents.y,
-            other.Position.z + aabb_half_extents.z);
-        // get difference vector between both centers
-        glm::vec3 difference = center - aabb_center;
-        glm::vec3 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-        // add clamped value to AABB_center and we get the value of box closest to circle
-        glm::vec3 closest = aabb_center + clamped;
-        // retrieve vector between center circle and closest point AABB and check if length <= radius
-        difference = closest - center;
-        return glm::length(difference) < ball.Radius;
-    }
-
-    glm::vec3 getSize(Model model)
-    {
-        float
-            min_x,
-            max_x,
-            min_y, max_y,
-            min_z, max_z;
-        min_x = max_x = model.vertices[0].pos.x;
-        min_y = max_y = model.vertices[0].pos.y;
-        min_z = max_z = model.vertices[0].pos.z;
-        for (int i = 0; i < model.vertices.size(); i++)
-        {
-            if (model.vertices[i].pos.x < min_x)
-                min_x = model.vertices[i].pos.x;
-            if (model.vertices[i].pos.x > max_x)
-                max_x = model.vertices[i].pos.x;
-            if (model.vertices[i].pos.y < min_y)
-                min_y = model.vertices[i].pos.y;
-            if (model.vertices[i].pos.y > max_y)
-                max_y = model.vertices[i].pos.y;
-            if (model.vertices[i].pos.z < min_z)
-                min_z = model.vertices[i].pos.z;
-            if (model.vertices[i].pos.z > max_z)
-                max_z = model.vertices[i].pos.z;
-        }
-        return glm::vec3(max_x - min_x, max_y - min_y, max_z - min_z);
-    }
-    
-    glm::vec3 getSize(Model model, glm::mat4 transformMatrix)
-    {
-        float
-            min_x,
-            max_x,
-            min_y, max_y,
-            min_z, max_z;
-        min_x = max_x =  model.vertices[0].pos.x;
-        min_y = max_y =  model.vertices[0].pos.y;
-        min_z = max_z =  model.vertices[0].pos.z;
-        
-        
-        for (int i = 0; i < model.vertices.size(); i++)
-        {
-            model.vertices[i].pos = glm::vec3(transformMatrix * glm::vec4(model.vertices[i].pos, 0.0));
-            if (model.vertices[i].pos.x < min_x)
-                min_x = model.vertices[i].pos.x;
-            if (model.vertices[i].pos.x > max_x)
-                max_x = model.vertices[i].pos.x;
-            if (model.vertices[i].pos.y < min_y)
-                min_y = model.vertices[i].pos.y;
-            if (model.vertices[i].pos.y > max_y)
-                max_y = model.vertices[i].pos.y;
-            if (model.vertices[i].pos.z < min_z)
-                min_z = model.vertices[i].pos.z;
-            if (model.vertices[i].pos.z > max_z)
-                max_z = model.vertices[i].pos.z;
-        }
-        return glm::vec3(max_x - min_x, max_y - min_y, max_z - min_z);
-    }
-
-    float getRadius(Model model)
-    {
-        float max_x;
-        int max_x_index = 0;
-        max_x = model.vertices[0].pos.x;
-        for (int i = 0; i < model.vertices.size(); i++)
-        {
-            if (model.vertices[i].pos.x > max_x)
-            {
-                max_x = model.vertices[i].pos.x;
-                max_x_index = i;
-            }
-        }
-
-        glm::vec3 distance = glm::vec3(0.0f) - model.vertices[max_x_index].pos;
-
-        return glm::length(distance);
-    }
 };
 
 // This is the main: probably you do not need to touch this!
