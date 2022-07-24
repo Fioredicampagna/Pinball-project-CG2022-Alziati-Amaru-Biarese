@@ -192,16 +192,16 @@ protected:
 
         glm::vec3 bumperSize = getSize(M_Bumper);
         
-        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f));
+        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
         
-        bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f));
+        bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
         
-        bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f));
+        bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
         
         M_Puller.init(this, MODEL_PATH + "Puller.obj");
         DS_Puller.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         
-        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), getSize(M_Puller), glm::vec3(0.0f, -90.0f, 0.0f));
+        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), getSize(M_Puller), glm::vec3(0.0f, -90.0f, 0.0f), M_Puller);
         
 
         M_Flipper.init(this, MODEL_PATH + "RightFlipper.obj");
@@ -210,9 +210,9 @@ protected:
         
         glm::vec3 flipperSize =  getSize(M_Flipper);
          
-        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), flipperSize, glm::vec3(leftFlipperRotation, -3.24f, -5.64f));
+        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), flipperSize, glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
         
-        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), flipperSize, glm::vec3(rightFlipperRotation, -3.24f, -5.64f));
+        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), flipperSize, glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
          
         
         M_Button.init(this, MODEL_PATH + "RightButton.obj");
@@ -222,7 +222,7 @@ protected:
         M_Ball.init(this, MODEL_PATH + "Ball.obj");
         DS_Ball.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         
-        ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), getRadius(M_Ball), glm::vec3(0.0f, 0.0f, 0.0f) );
+        ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), getRadius(M_Ball), glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
         
        
         M_Score.init(this, MODEL_PATH + "DL6.obj");
@@ -753,3 +753,5 @@ int main()
 
     return EXIT_SUCCESS;
 }
+
+

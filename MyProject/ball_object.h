@@ -27,8 +27,8 @@ public:
     float   Radius;
     
     // constructor(s)
-    BallObject();
-    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation);
+    BallObject(): GameObject(), Radius(12.5f)   { };
+    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, glm::vec3(radius * 2.0f, radius * 2.0f, radius * 2.0f), rotation, model), Radius(radius) { };
     // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
     //glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
