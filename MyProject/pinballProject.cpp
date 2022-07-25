@@ -54,6 +54,7 @@ protected:
     float ballStartz = 9.0f;
     float ballStartx = 0.0f;
     float ballStarty = 8.4032f + std::abs(ballStartz - -5.9728f) * std::tan(alfa);
+    
     float dz = 0.0f;
     float dy = 0.0f;
     float dx = 0.0f;
@@ -200,7 +201,11 @@ protected:
         
         bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
         
+        bumper2.setBBcenter(bumper1.BBcenter);
+        
         bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        
+        bumper3.setBBcenter(bumper1.BBcenter);
         
         M_Puller.init(this, MODEL_PATH + "Puller.obj");
         DS_Puller.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
@@ -218,9 +223,9 @@ protected:
          
         leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), glm::vec3(0.0f), glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
         leftFlipper.getSize();
-        glm::vec3 flipperSize =  leftFlipper.Size;
         
-        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), flipperSize, glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
+        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), glm::vec3(0.0f), glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
+        rightFlipper.getSize();
          
         
         M_Button.init(this, MODEL_PATH + "RightButton.obj");
@@ -350,7 +355,11 @@ protected:
         
         updateFlippers();
         
-        updateBallPosition();
+        
+        /*if(!ball.SphereRectCollision(leftFlipper)) {
+            updateBallPosition();
+        } */
+        
         
         
 

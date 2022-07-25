@@ -1,11 +1,3 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #ifndef BALLOBJECT_H
 #define BALLOBJECT_H
 
@@ -53,25 +45,27 @@ public:
         Radius = glm::length(distance);
     }
     
-    bool CheckCollision(GameObject &other) // AABB - Circle collision
-    {
-        // get center point circle first
-        glm::vec3 center(this->Position + this->Radius);
-        // calculate AABB info (center, half-extents)
-        glm::vec3 aabb_half_extents(other.Size.x / 2.0f, other.Size.y / 2.0f, other.Size.z / 2.0f);
+    bool SphereRectCollision( GameObject &other) {
         
-        glm::vec3 aabb_center(
-            other.Position.x + aabb_half_extents.x,
-            other.Position.y + aabb_half_extents.y,
-            other.Position.z + aabb_half_extents.z);
-        // get difference vector between both centers
-        glm::vec3 difference = center - aabb_center;
-        glm::vec3 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-        // add clamped value to AABB_center and we get the value of box closest to circle
-        glm::vec3 closest = aabb_center + clamped;
-        // retrieve vector between center circle and closest point AABB and check if length <= radius
-        difference = closest - center;
-        return glm::length(difference) < this->Radius;
+   
+    float sphereXDistance = abs(this->Position.x - other.BBcenter.x);
+    float sphereYDistance = abs(this->Position.y - other.BBcenter.y);
+    float sphereZDistance = abs(this->Position.z - other.BBcenter.z);
+
+    if (sphereXDistance >= (other.Size.x + this->Radius)) { return false; }
+    if (sphereYDistance >= (other.Size.y + this->Radius)) { return false; }
+    if (sphereZDistance >= (other.Size.z + this->Radius)) { return false; }
+
+    if (sphereXDistance < (other.Size.x)) { return true; }
+    if (sphereYDistance < (other.Size.y)) { return true; }
+    if (sphereZDistance < (other.Size.z)) { return true; }
+
+    float cornerDistance_sq = ((sphereXDistance - other.Size.x) * (sphereXDistance - other.Size.x)) +
+                         ((sphereYDistance - other.Size.y) * (sphereYDistance - other.Size.y) +
+                         ((sphereYDistance - other.Size.z) * (sphereYDistance - other.Size.z)));
+
+    return (cornerDistance_sq < (this->Radius * this->Radius));
+        
     }
 };
 
