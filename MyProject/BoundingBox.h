@@ -12,6 +12,7 @@
 class BoundingBox{
 public:
     glm::vec3 Size, Center, MinX, MaxX, MinY, MaxY, MinZ, MaxZ;
+    glm::vec3 CenterModel, MinXModel, MaxXModel, MinYModel, MaxYModel, MinZModel, MaxZModel;
     
     BoundingBox(): Size(0.0f, 0.0f, 0.0f), Center(0.0f, 0.0f, 0.0f), MinX(0.0f, 0.0f, 0.0f), MaxX(0.0f, 0.0f, 0.0f),
     MinY(0.0f, 0.0f, 0.0f), MaxY(0.0f, 0.0f, 0.0f), MinZ(0.0f, 0.0f, 0.0f), MaxZ(0.0f, 0.0f, 0.0f) { };
@@ -19,28 +20,27 @@ public:
     void getSize(Model model)
     {
        
-        MinX = MaxX = MinY = MaxY = MinZ = MaxZ = model.vertices[0].pos;
+        MinXModel = MaxXModel = MinYModel = MaxYModel = MinZModel = MaxZModel = model.vertices[0].pos;
           for (int i = 0; i < model.vertices.size(); i++) {
-              if (model.vertices[i].pos.x < MinX.x) MinX = model.vertices[i].pos;
-              if (model.vertices[i].pos.x > MaxX.x) MaxX = model.vertices[i].pos;
-              if (model.vertices[i].pos.y < MinY.y) MinY = model.vertices[i].pos;
-              if (model.vertices[i].pos.y > MaxY.y) MaxY = model.vertices[i].pos;
-              if (model.vertices[i].pos.z < MinZ.z) MinZ = model.vertices[i].pos;
-              if (model.vertices[i].pos.z > MaxZ.z) MaxZ = model.vertices[i].pos;
+              if (model.vertices[i].pos.x < MinXModel.x) MinXModel = model.vertices[i].pos;
+              if (model.vertices[i].pos.x > MaxXModel.x) MaxXModel = model.vertices[i].pos;
+              if (model.vertices[i].pos.y < MinYModel.y) MinYModel = model.vertices[i].pos;
+              if (model.vertices[i].pos.y > MaxYModel.y) MaxYModel = model.vertices[i].pos;
+              if (model.vertices[i].pos.z < MinZModel.z) MinZModel = model.vertices[i].pos;
+              if (model.vertices[i].pos.z > MaxZModel.z) MaxZModel = model.vertices[i].pos;
           }
-          Size = glm::vec3(MaxX.x - MinX.x, MaxY.y - MinY.y, MaxZ.z - MinZ.z);
-          Center = glm::vec3((MinX.x + MaxX.x)/2, (MinY.y + MaxY.y)/2, (MinZ.z + MaxZ.z)/2);
-          //Transform = glm::translate(glm::mat4(1), center) * glm::scale(glm::mat4(1), size);
+          Size = glm::vec3(MaxXModel.x - MinXModel.x, MaxYModel.y - MinYModel.y, MaxZModel.z - MinZModel.z);
+          CenterModel = glm::vec3((MinXModel.x + MaxXModel.x)/2, (MinYModel.y + MaxYModel.y)/2, (MinZModel.z + MaxZModel.z)/2);
     }
     
     void transformBox(glm::mat4 transformMatrix) {
-        MinX = glm::vec3(transformMatrix * glm::vec4(MinX, 0.0));
-        MaxX = glm::vec3(transformMatrix * glm::vec4(MaxX, 0.0));
-        MinY = glm::vec3(transformMatrix * glm::vec4(MinY, 0.0));
-        MaxY = glm::vec3(transformMatrix * glm::vec4(MaxY, 0.0));
-        MinZ = glm::vec3(transformMatrix * glm::vec4(MinZ, 0.0));
-        MaxZ = glm::vec3(transformMatrix * glm::vec4(MaxZ, 0.0));
-        Center = glm::vec3(transformMatrix * glm::vec4(Center, 0.0));
+        MinX = glm::vec3(transformMatrix * glm::vec4(MinXModel, 1.0));
+        MaxX = glm::vec3(transformMatrix * glm::vec4(MaxXModel, 1.0));
+        MinY = glm::vec3(transformMatrix * glm::vec4(MinYModel, 1.0));
+        MaxY = glm::vec3(transformMatrix * glm::vec4(MaxYModel, 1.0));
+        MinZ = glm::vec3(transformMatrix * glm::vec4(MinZModel, 1.0));
+        MaxZ = glm::vec3(transformMatrix * glm::vec4(MaxZModel, 1.0));
+        Center = glm::vec3(transformMatrix * glm::vec4(CenterModel, 1.0));
     }
 };
 
