@@ -352,7 +352,7 @@ protected:
         
         
         if(!ball.SphereRectCollision(leftFlipper) && !ball.SphereRectCollision(rightFlipper)
-           &&!ball.SphereRectCollision(bumper1) && !ball.SphereRectCollision(bumper2) && !ball.SphereRectCollision(bumper3)) {
+           /*&&!ball.SphereRectCollision(bumper1) && !ball.SphereRectCollision(bumper2) && !ball.SphereRectCollision(bumper3)*/) {
             updateBallPosition();
         }
         
@@ -453,7 +453,7 @@ protected:
     {
         ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
 
-        object.CollisionBox.transformBox(ubo.model);
+        object.transform = ubo.model;
         
         
         mapAndUnmap(currentImage, DS, data, ubo);

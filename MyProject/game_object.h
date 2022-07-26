@@ -14,12 +14,14 @@ class GameObject
 public:
     // object state
     glm::vec3   Position, Rotation;
+    glm::mat4 transform;
+    
     Model Model;
     BoundingBox CollisionBox;
     // render state
     //Texture   Sprite;
     // constructor(s)
-    GameObject(): Position(0.0f, 0.0f, 0.0f), Rotation(0.0f), CollisionBox(BoundingBox() ) { };
+    GameObject(): Position(0.0f, 0.0f, 0.0f), Rotation(0.0f), CollisionBox(BoundingBox()) { };
     GameObject(glm::vec3 pos, glm::vec3 rotation, struct Model model): Position(pos), Rotation(rotation), Model(model), CollisionBox(BoundingBox()) { };
     // draw sprite
     //virtual void Draw();

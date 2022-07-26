@@ -46,22 +46,23 @@ public:
     
     bool SphereRectCollision( GameObject &other) {
         
+    glm::vec3 relPosition = glm::vec3(glm::inverse(other.transform) * glm::vec4(this->Position, 1.0));
    
-    float sphereXDistance = abs(this->Position.x - other.CollisionBox.Center.x);
-    float sphereYDistance = abs(this->Position.y - other.CollisionBox.Center.y);
-    float sphereZDistance = abs(this->Position.z - other.CollisionBox.Center.z);
+    float sphereXDistance = abs(relPosition.x - other.CollisionBox.Center.x);
+    float sphereYDistance = abs(relPosition.y - other.CollisionBox.Center.y);
+    float sphereZDistance = abs(relPosition.z - other.CollisionBox.Center.z);
 
-    if (sphereXDistance >= (other.CollisionBox.Size.x + this->Radius)) { return false; }
-    if (sphereYDistance >= (other.CollisionBox.Size.y + this->Radius)) { return false; }
-    if (sphereZDistance >= (other.CollisionBox.Size.z + this->Radius)) { return false; }
+    if (sphereXDistance >= (other.CollisionBox.Size.x / 2.0 + this->Radius)) { return false; }
+    if (sphereYDistance >= (other.CollisionBox.Size.y / 2.0 + this->Radius)) { return false; }
+    if (sphereZDistance >= (other.CollisionBox.Size.z / 2.0 + this->Radius)) { return false; }
 
-    if (sphereXDistance < (other.CollisionBox.Size.x)) { return true; }
-    if (sphereYDistance < (other.CollisionBox.Size.y)) { return true; }
-    if (sphereZDistance < (other.CollisionBox.Size.z)) { return true; }
+    if (sphereXDistance < (other.CollisionBox.Size.x / 2.0)) { return true; }
+    if (sphereYDistance < (other.CollisionBox.Size.y / 2.0)) { return true; }
+    if (sphereZDistance < (other.CollisionBox.Size.z / 2.0)) { return true; }
 
-    float cornerDistance_sq = ((sphereXDistance - other.CollisionBox.Size.x) * (sphereXDistance - other.CollisionBox.Size.x)) +
-                         ((sphereYDistance - other.CollisionBox.Size.y) * (sphereYDistance - other.CollisionBox.Size.y) +
-                         ((sphereYDistance - other.CollisionBox.Size.z) * (sphereYDistance - other.CollisionBox.Size.z)));
+    float cornerDistance_sq = ((sphereXDistance - other.CollisionBox.Size.x / 2.0) * (sphereXDistance - other.CollisionBox.Size.x/ 2.0)) +
+                         ((sphereYDistance - other.CollisionBox.Size.y/ 2.0) * (sphereYDistance - other.CollisionBox.Size.y/ 2.0) +
+                         ((sphereYDistance - other.CollisionBox.Size.z/ 2.0) * (sphereYDistance - other.CollisionBox.Size.z/ 2.0)));
 
     return (cornerDistance_sq < (this->Radius * this->Radius));
         
