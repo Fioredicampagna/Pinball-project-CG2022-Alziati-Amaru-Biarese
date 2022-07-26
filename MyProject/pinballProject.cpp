@@ -193,26 +193,21 @@ protected:
 
         
         
-        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), glm::vec3(0.0f) , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        bumper1 = GameObject(glm::vec3(1.1819f, 9.1362f, 0.020626f), glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        bumper1.CollisionBox.getSize(bumper1.Model);
+
+        bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        bumper2.CollisionBox.getSize(bumper2.Model);
         
-        bumper1.getSize();
-        
-        glm::vec3 bumperSize = bumper1.Size;
-        
-        bumper2 =  GameObject(glm::vec3(-1.5055f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
-        
-        bumper2.setBBcenter(bumper1.BBcenter);
-        
-        bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), bumperSize , glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
-        
-        bumper3.setBBcenter(bumper1.BBcenter);
+        bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
+        bumper3.CollisionBox.getSize(bumper3.Model);
         
         M_Puller.init(this, MODEL_PATH + "Puller.obj");
         DS_Puller.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         
-        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), glm::vec3(0.0f), glm::vec3(0.0f, -90.0f, 0.0f), M_Puller);
-        
-        puller.getSize();
+        puller = GameObject(glm::vec3(-2.5264f, 8.3925f, pullerActualPosition), glm::vec3(0.0f, -90.0f, 0.0f), M_Puller);
+        puller.CollisionBox.getSize(puller.Model);
+
         
 
         M_Flipper.init(this, MODEL_PATH + "RightFlipper.obj");
@@ -221,11 +216,11 @@ protected:
         
         
          
-        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), glm::vec3(0.0f), glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
-        leftFlipper.getSize();
+        leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
+        leftFlipper.CollisionBox.getSize(leftFlipper.Model);
         
-        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), glm::vec3(0.0f), glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
-        rightFlipper.getSize();
+        rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
+        rightFlipper.CollisionBox.getSize(rightFlipper.Model);
          
         
         M_Button.init(this, MODEL_PATH + "RightButton.obj");
@@ -356,9 +351,10 @@ protected:
         updateFlippers();
         
         
-        /*if(!ball.SphereRectCollision(leftFlipper)) {
+        if(!ball.SphereRectCollision(leftFlipper) && !ball.SphereRectCollision(rightFlipper)
+           &&!ball.SphereRectCollision(bumper1) && !ball.SphereRectCollision(bumper2) && !ball.SphereRectCollision(bumper3)) {
             updateBallPosition();
-        } */
+        }
         
         
         
@@ -453,11 +449,11 @@ protected:
         mapAndUnmap(currentImage, DS, data, ubo);
     }
     
-    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, GameObject object, Model model)
+    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, GameObject &object)
     {
         ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
 
-        object.getSize(ubo.model);
+        object.CollisionBox.transformBox(ubo.model);
         
         
         mapAndUnmap(currentImage, DS, data, ubo);
@@ -470,30 +466,30 @@ protected:
         
         // bumper 1
         
-        updateModel(currentImage, DS_Bumper1, data, ubo, bumper1.Position, bumper1.Rotation);
+        updateModel(currentImage, DS_Bumper1, data, ubo, bumper1.Position, bumper1.Rotation, bumper1);
 
         // bumper 2
         
-        updateModel(currentImage, DS_Bumper2, data, ubo, bumper2.Position, bumper2.Rotation);
+        updateModel(currentImage, DS_Bumper2, data, ubo, bumper2.Position, bumper2.Rotation, bumper2);
 
         // bumper 3
         
-        updateModel(currentImage, DS_Bumper3, data, ubo, bumper3.Position, bumper3.Rotation);
+        updateModel(currentImage, DS_Bumper3, data, ubo, bumper3.Position, bumper3.Rotation, bumper3);
 
         // puller
         
-        updateModel(currentImage, DS_Puller, data, ubo, puller.Position, puller.Rotation, puller, M_Puller);
+        updateModel(currentImage, DS_Puller, data, ubo, puller.Position, puller.Rotation, puller);
 
         // left flipper
         
         
-        updateModel(currentImage, DS_LeftFlipper, data, ubo, leftFlipper.Position, leftFlipper.Rotation, leftFlipper, M_Flipper); // 29.8 max rotation
+        updateModel(currentImage, DS_LeftFlipper, data, ubo, leftFlipper.Position, leftFlipper.Rotation, leftFlipper); // 29.8 max rotation
         
 
         // right flipper
         
         
-        updateModel(currentImage, DS_RightFlipper, data, ubo, rightFlipper.Position, rightFlipper.Rotation, rightFlipper, M_Flipper); // 150f max rotation
+        updateModel(currentImage, DS_RightFlipper, data, ubo, rightFlipper.Position, rightFlipper.Rotation, rightFlipper); // 150f max rotation
 
         // left button
         updateModel(currentImage, DS_LeftButton, data, ubo, glm::vec3(2.6175f - buttonDepth * buttonLeftPressed, 8.7853f, -6.6902f), glm::vec3(0.0f, 0.0f, -90.0f));

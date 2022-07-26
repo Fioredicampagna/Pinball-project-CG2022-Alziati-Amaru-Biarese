@@ -20,8 +20,7 @@ public:
     
     // constructor(s)
     BallObject(): GameObject(), Radius(12.5f)   { };
-    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, glm::vec3(radius * 2.0f, radius * 2.0f, radius * 2.0f), rotation, model), Radius(radius) { };
-    // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
+    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, rotation, model), Radius(radius) { };    // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
     //glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
     //void      Reset(glm::vec3 position, glm::vec2 velocity);
@@ -48,21 +47,21 @@ public:
     bool SphereRectCollision( GameObject &other) {
         
    
-    float sphereXDistance = abs(this->Position.x - other.BBcenter.x);
-    float sphereYDistance = abs(this->Position.y - other.BBcenter.y);
-    float sphereZDistance = abs(this->Position.z - other.BBcenter.z);
+    float sphereXDistance = abs(this->Position.x - other.CollisionBox.Center.x);
+    float sphereYDistance = abs(this->Position.y - other.CollisionBox.Center.y);
+    float sphereZDistance = abs(this->Position.z - other.CollisionBox.Center.z);
 
-    if (sphereXDistance >= (other.Size.x + this->Radius)) { return false; }
-    if (sphereYDistance >= (other.Size.y + this->Radius)) { return false; }
-    if (sphereZDistance >= (other.Size.z + this->Radius)) { return false; }
+    if (sphereXDistance >= (other.CollisionBox.Size.x + this->Radius)) { return false; }
+    if (sphereYDistance >= (other.CollisionBox.Size.y + this->Radius)) { return false; }
+    if (sphereZDistance >= (other.CollisionBox.Size.z + this->Radius)) { return false; }
 
-    if (sphereXDistance < (other.Size.x)) { return true; }
-    if (sphereYDistance < (other.Size.y)) { return true; }
-    if (sphereZDistance < (other.Size.z)) { return true; }
+    if (sphereXDistance < (other.CollisionBox.Size.x)) { return true; }
+    if (sphereYDistance < (other.CollisionBox.Size.y)) { return true; }
+    if (sphereZDistance < (other.CollisionBox.Size.z)) { return true; }
 
-    float cornerDistance_sq = ((sphereXDistance - other.Size.x) * (sphereXDistance - other.Size.x)) +
-                         ((sphereYDistance - other.Size.y) * (sphereYDistance - other.Size.y) +
-                         ((sphereYDistance - other.Size.z) * (sphereYDistance - other.Size.z)));
+    float cornerDistance_sq = ((sphereXDistance - other.CollisionBox.Size.x) * (sphereXDistance - other.CollisionBox.Size.x)) +
+                         ((sphereYDistance - other.CollisionBox.Size.y) * (sphereYDistance - other.CollisionBox.Size.y) +
+                         ((sphereYDistance - other.CollisionBox.Size.z) * (sphereYDistance - other.CollisionBox.Size.z)));
 
     return (cornerDistance_sq < (this->Radius * this->Radius));
         
