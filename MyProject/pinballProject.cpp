@@ -326,6 +326,10 @@ protected:
         drawModel(commandBuffer, currentImage, M_Ball, DS_Ball, P1);
     }
 
+    
+    
+    
+    
     // Here is where you update the uniforms.
     // Very likely this will be where you will be writing the logic of your application.
     void updateUniformBuffer(uint32_t currentImage)
@@ -351,11 +355,12 @@ protected:
         updateFlippers();
         
         
-        if(!ball.SphereRectCollision(leftFlipper) && !ball.SphereRectCollision(rightFlipper)
-           /*&&!ball.SphereRectCollision(bumper1) && !ball.SphereRectCollision(bumper2) && !ball.SphereRectCollision(bumper3)*/) {
+        /*if(!ball.SphereRectCollision(leftFlipper) && !ball.SphereRectCollision(rightFlipper)
+           &&!ball.SphereRectCollision(bumper1) && !ball.SphereRectCollision(bumper2) && !ball.SphereRectCollision(bumper3)) {
             updateBallPosition();
-        }
-        
+        } */
+        updateBallPosition();
+        ball.bounce(leftFlipper);
         
         
 
@@ -381,6 +386,11 @@ protected:
         updateScene(currentImage, data, ubo);
     }
 
+    
+    
+    
+    
+    
     glm::mat4 MakeWorldMatrixEuler(glm::vec3 pos, glm::vec3 YPR, glm::vec3 size)
     {
         glm::mat4 out = glm::translate(glm::mat4(1.0), pos) * glm::rotate(glm::mat4(1.0), glm::radians(YPR.x), glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.0), glm::radians(YPR.y), glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.0), glm::radians(YPR.z), glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0), size);
@@ -638,14 +648,14 @@ protected:
 
         float apiano = 9.8f * sin(alfa);
 
-        float ay = apiano * sin(alfa);
-        float az = apiano * cos(alfa);
+        ball.Acceleration.y = apiano * sin(alfa);
+        ball.Acceleration.z = apiano * cos(alfa);
 
-        dz = vz * dt + 0.5f * az * std::pow(dt, 2);
-        vz += 0.5f * az * dt;
+        dz = vz * dt + 0.5f *  ball.Acceleration.z * std::pow(dt, 2);
+        vz += 0.5f *  ball.Acceleration.z * dt;
 
-        dy = vy * dt + 0.5 * az * std::pow(dt, 2);
-        vy += 0.5 * ay * dt;
+        dy = vy * dt + 0.5 * ball.Acceleration.z * std::pow(dt, 2);
+        vy += 0.5 * ball.Acceleration.y * dt;
         
         ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f));
     }
