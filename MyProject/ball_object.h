@@ -17,11 +17,12 @@ class BallObject : public GameObject
 public:
     // ball state	
     float   Radius;
-    glm::vec3 Acceleration;
-    
+    glm::vec3 AccelerationTot;
+    glm::vec3 AccelerationGravity;
+           
     // constructor(s)
-    BallObject(): GameObject(), Radius(12.5f), Acceleration(glm::vec3(0.0f))  { };
-    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, rotation, model), Radius(radius), Acceleration(glm::vec3(0.0f)) { };    // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
+    BallObject(): GameObject(), Radius(12.5f), AccelerationTot(glm::vec3(0.0f))  { };
+    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, rotation, model), Radius(radius), AccelerationTot(glm::vec3(0.0f)) {};    // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
     //glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
     //void      Reset(glm::vec3 position, glm::vec2 velocity);
@@ -75,7 +76,15 @@ public:
             
             glm::vec3 distance = relPosition - other.CollisionBox.Center;
             glm::vec3 norm;
+            glm::vec3 accVersor = glm::vec3(glm::inverse(other.transform) * glm::vec4(glm::normalize(AccelerationTot), 1.0));
+
+
+           
+
             
+
+
+
             float relativeAngle = asin(distance.z / distance.x);
             
             float threshold1 = asin(( other.CollisionBox.Size.z / 2.0) / (- other.CollisionBox.Size.x / 2.0)); // upper left
@@ -84,18 +93,57 @@ public:
             
             if((relativeAngle >= threshold1 && relativeAngle < threshold2) && relPosition.x < other.CollisionBox.Center.x){
                 // caso lato corto sinistra
-                printf("lato corto sinistra");
+                printf("lato corto sinistra\n");
+
+                norm = glm::vec3(-1.0f, 0.0f, 0.0f);
+
             } else if((relativeAngle >= threshold1 && relativeAngle < threshold2) && relPosition.x > other.CollisionBox.Center.x){
                 // caso lato corto destra
-                printf("lato corto destra");
+                printf("lato corto destra\n");
+
+                norm = glm::vec3(1.0f, 0.0f, 0.0f);
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2  && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z < other.CollisionBox.Center.z ) {
                 // caso lato lungo sotto
-                printf("lato lungo sotto");
+                printf("lato lungo sotto\n");
+
+                norm = glm::vec3(0.0f, 0.0f, -1.0f);
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2 && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z > other.CollisionBox.Center.z ) {
                 // caso lato lungo sopra
-                printf("lato lungo sopra");
+                printf("lato lungo sopra\n");
+
+                norm = glm::vec3(0.0f, 0.0f, 1.0f);
             }
-            
+
+
+            double dot = glm::dot(norm, accVersor);
+
+            double lenSq1 = norm.x*norm.x + norm.y*norm.y +norm.z*norm.z;
+            double lenSq2 = accVersor.x*accVersor.x + accVersor.y*accVersor.y +accVersor.z*accVersor.z;
+
+            float angle = acos(dot/sqrt(lenSq1 * lenSq2));
+
+
+           // glm::vec3 bounceAcc =  accVersor * (1.0f/cos(angle)) ;
+
+
+            glm::vec3 bounceAcc = glm::reflect(accVersor, norm);
+
+          //  std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
+            std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
+            std::cout<< "\n";
+
+            bounceAcc =glm::vec3(other.transform * glm::vec4(bounceAcc, 1.0f));
+
+             bounceAcc = AccelerationTot * bounceAcc;
+
+             AccelerationTot += AccelerationGravity + bounceAcc;
+
+
+
+
+
+
+
         }
     }
     

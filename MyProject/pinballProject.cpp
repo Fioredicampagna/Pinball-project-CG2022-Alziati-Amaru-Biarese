@@ -61,6 +61,8 @@ protected:
 
     float vz = 0.0f;
     float vy = 0.0f;
+    float vx = 0.0f;
+
 
     // variabili per la matrice camera
     glm::vec3 cameraPos = glm::vec3(0.0f, 17.0f, -15.0f);
@@ -232,7 +234,12 @@ protected:
         
         ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
         ball.getRadius();
-        
+        float apiano = 9.8f * sin(alfa);
+
+        ball.AccelerationGravity.y = apiano * sin(alfa);
+        ball.AccelerationGravity.z = apiano * cos(alfa);
+
+        ball.AccelerationTot = ball.AccelerationGravity;
        
         M_Score.init(this, MODEL_PATH + "DL6.obj");
         DS_DL1.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
@@ -526,6 +533,8 @@ protected:
         // ball
         
         updateModel(currentImage, DS_Ball, data, ubo, ball.Position, glm::vec3(0.0f, 0.0f, 0.0f));
+
+        std::cout << ball.Position.y << "\n";
     }
 
     void updateCamera(float deltaT)
@@ -646,18 +655,16 @@ protected:
 
         //float z = -5.9728f;
 
-        float apiano = 9.8f * sin(alfa);
+        dz = vz * dt + 0.5f *  ball.AccelerationTot.z * std::pow(dt, 2);
+        vz += 0.5f *  ball.AccelerationTot.z * dt;
 
-        ball.Acceleration.y = apiano * sin(alfa);
-        ball.Acceleration.z = apiano * cos(alfa);
+        dy = vy * dt + 0.5 * ball.AccelerationTot.y * std::pow(dt, 2);
+        vy += 0.5 * ball.AccelerationTot.y * dt;
 
-        dz = vz * dt + 0.5f *  ball.Acceleration.z * std::pow(dt, 2);
-        vz += 0.5f *  ball.Acceleration.z * dt;
-
-        dy = vy * dt + 0.5 * ball.Acceleration.z * std::pow(dt, 2);
-        vy += 0.5 * ball.Acceleration.y * dt;
+        dx = vx * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2);
+        vx += 0.5 * ball.AccelerationTot.x * dt;
         
-        ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f));
+        ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -8.0f));
     }
 
 };
