@@ -76,9 +76,11 @@ public:
             
             glm::vec3 distance = relPosition - other.CollisionBox.Center;
             glm::vec3 norm;
-            glm::vec3 accVersor = glm::vec3(glm::inverse(other.transform) * glm::vec4(glm::normalize(AccelerationTot), 1.0));
+            glm::vec3 accVersor = glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot, 1.0));
+            
+            accVersor = glm::normalize(accVersor);
 
-
+            
            
 
             
@@ -114,29 +116,39 @@ public:
                 norm = glm::vec3(0.0f, 0.0f, 1.0f);
             }
 
+            
+            
+            float dot = glm::dot(norm, accVersor);
+            
+            glm::vec3 reflected = accVersor - 2.0f * norm * dot;
+            
+            glm::vec3 bounceAcc = reflected * glm::length(glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot, 1.0)));
+             
+             bounceAcc = glm::vec3(other.transform * glm::vec4(bounceAcc, 1.0f));
 
-            double dot = glm::dot(norm, accVersor);
+             
+            /*
+            norm = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
 
-            double lenSq1 = norm.x*norm.x + norm.y*norm.y +norm.z*norm.z;
-            double lenSq2 = accVersor.x*accVersor.x + accVersor.y*accVersor.y +accVersor.z*accVersor.z;
+            norm = glm::normalize(norm);
+            
+            glm::vec3 accVersorWorld = glm::normalize(AccelerationTot);
+            
+            float dot = glm::dot(norm, accVersorWorld);
 
-            float angle = acos(dot/sqrt(lenSq1 * lenSq2));
-
-
-           // glm::vec3 bounceAcc =  accVersor * (1.0f/cos(angle)) ;
-
-
-            glm::vec3 bounceAcc = glm::reflect(accVersor, norm);
-
+            glm::vec3 reflected = accVersorWorld - 2.0f * norm * dot;
+            
+            glm::vec3 bounceAcc = reflected * glm::length(AccelerationTot); */
+            
           //  std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
             std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
             std::cout<< "\n";
 
-            bounceAcc =glm::vec3(other.transform * glm::vec4(bounceAcc, 1.0f));
+            
 
-             bounceAcc = AccelerationTot * bounceAcc;
+             
 
-             AccelerationTot += AccelerationGravity + bounceAcc;
+             AccelerationTot += bounceAcc / 10.0f ;
 
 
 

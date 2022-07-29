@@ -368,6 +368,7 @@ protected:
         } */
         updateBallPosition();
         ball.bounce(leftFlipper);
+        ball.bounce(rightFlipper);
         
         
 
