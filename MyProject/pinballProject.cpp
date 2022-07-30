@@ -234,7 +234,7 @@ protected:
         
         ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
         ball.getRadius();
-        float apiano = 9.8f * sin(alfa);
+        float apiano = 4.9f * sin(alfa);
 
         ball.AccelerationGravity.y = apiano * sin(alfa);
         ball.AccelerationGravity.z = apiano * cos(alfa);
@@ -659,8 +659,8 @@ protected:
         dz = vz * dt + 0.5f *  ball.AccelerationTot.z * std::pow(dt, 2);
         vz += 0.5f *  ball.AccelerationTot.z * dt;
 
-        dy = vy * dt + 0.5 * ball.AccelerationTot.y * std::pow(dt, 2);
-        vy += 0.5 * ball.AccelerationTot.y * dt;
+        dy = vy * dt + 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * std::pow(dt, 2);
+        vy += 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * dt;
 
         dx = vx * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2);
         vx += 0.5 * ball.AccelerationTot.x * dt;
