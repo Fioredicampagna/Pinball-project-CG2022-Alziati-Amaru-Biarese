@@ -367,8 +367,7 @@ protected:
             updateBallPosition();
         } */
         updateBallPosition();
-        ball.bounce(leftFlipper);
-        ball.bounce(rightFlipper);
+        
         
         
 
@@ -653,6 +652,11 @@ protected:
     {
 
         float dt = 0.3f;
+        float accIntensity;
+        glm::vec3 norm;
+        glm::vec3 accVers;
+        glm::vec3 reflected;
+        glm::vec3 bounceAcc = glm::vec3(0.0f, 0.0f, 0.0f);
 
         //float z = -5.9728f;
 
@@ -666,6 +670,39 @@ protected:
         vx += 0.5 * ball.AccelerationTot.x * dt;
         
         ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -8.0f));
+        accVers = glm::normalize(ball.AccelerationTot);
+        accIntensity = glm::length(ball.AccelerationTot);
+        if(ball.Position.x >= 2.3465f){
+            norm = glm::vec3(-1.0f, 0.0f, 0.0f);
+            reflected = glm::reflect(accVers, norm);
+            bounceAcc = reflected * accIntensity;
+            ball.AccelerationTot.x = 0.0f; 
+            //ball.AccelerationTot.x = - ball.AccelerationTot.x;
+        }else if(ball.Position.x <= -2.7434f){
+            norm = glm::vec3(1.0f, 0.0f, 0.0f);
+            reflected = glm::reflect(accVers, norm);
+            bounceAcc = reflected * accIntensity;
+            ball.AccelerationTot.x = 0.0f;
+            //ball.AccelerationTot.x = - ball.AccelerationTot.x;
+        }/*else if(ball.Position.z >= 4.1008f){
+            glm::mat4 rX = glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(1.0f, 0.0f, 0.0f));
+            norm = glm::vec3(rX*glm::vec4(glm::vec3(0.0f, 0.0f, -1.0f), 0.0f));
+            norm = glm::normalize(norm);
+            reflected = glm::reflect(accVers, norm);
+            bounceAcc = reflected * accIntensity;
+        }/*else if(ball.Position.z <= (8.4032f + 8.6929f*cos(alfa)/sin(alfa))){
+            if((ball.Position.x >= -2.7434f && ball.Position.x <= -1.563f) ||
+            (ball.Position.x <= 2.3465f && ball.Position.x >= 0.9115f)){
+                glm::mat4 rX = glm::rotate(glm::mat4(1.0f), -alfa, glm::vec3(1.0f, 0.0f, 0.0f));
+                norm = glm::vec3(rX*glm::vec4(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f));
+                norm = glm::normalize(norm);
+                reflected = glm::reflect(accVers, norm);
+                bounceAcc = reflected * accIntensity;
+            }
+        }*/
+        ball.AccelerationTot += bounceAcc;
+        ball.bounce(leftFlipper);
+        ball.bounce(rightFlipper);
     }
 
 };
