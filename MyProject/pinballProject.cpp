@@ -51,7 +51,7 @@ protected:
     bool buttonRightPressed = false;
 
     float alfa = 0.1288712254f;
-    float ballStartz = 9.0f;
+    float ballStartz = 3.9f;
     float ballStartx = 0.0f;
     float ballStarty = 8.4032f + std::abs(ballStartz - -5.9728f) * std::tan(alfa);
     
@@ -673,36 +673,41 @@ protected:
         accVers = glm::normalize(ball.AccelerationTot);
         accIntensity = glm::length(ball.AccelerationTot);
         if(ball.Position.x >= 2.3465f){
-            norm = glm::vec3(-1.0f, 0.0f, 0.0f);
+            /*norm = glm::vec3(-1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);
             bounceAcc = reflected * accIntensity;
-            ball.AccelerationTot.x = 0.0f; 
-            //ball.AccelerationTot.x = - ball.AccelerationTot.x;
+            ball.AccelerationTot.x = 0.0f; */
+            ball.AccelerationTot.x = - ball.AccelerationTot.x;
         }else if(ball.Position.x <= -2.7434f){
-            norm = glm::vec3(1.0f, 0.0f, 0.0f);
+            /*norm = glm::vec3(1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);
             bounceAcc = reflected * accIntensity;
-            ball.AccelerationTot.x = 0.0f;
-            //ball.AccelerationTot.x = - ball.AccelerationTot.x;
-        }/*else if(ball.Position.z >= 4.1008f){
-            glm::mat4 rX = glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(1.0f, 0.0f, 0.0f));
+            ball.AccelerationTot.x = 0.0f;*/
+            ball.AccelerationTot.x = - ball.AccelerationTot.x;
+        }else if(ball.Position.z >= 4.1008f){
+            /*glm::mat4 rX = glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(1.0f, 0.0f, 0.0f));
             norm = glm::vec3(rX*glm::vec4(glm::vec3(0.0f, 0.0f, -1.0f), 0.0f));
             norm = glm::normalize(norm);
             reflected = glm::reflect(accVers, norm);
-            bounceAcc = reflected * accIntensity;
-        }/*else if(ball.Position.z <= (8.4032f + 8.6929f*cos(alfa)/sin(alfa))){
+            bounceAcc = reflected * accIntensity;*/
+            ball.AccelerationTot.z = - ball.AccelerationTot.z;
+        }else if(ball.Position.z <= -5.4828f){
             if((ball.Position.x >= -2.7434f && ball.Position.x <= -1.563f) ||
             (ball.Position.x <= 2.3465f && ball.Position.x >= 0.9115f)){
-                glm::mat4 rX = glm::rotate(glm::mat4(1.0f), -alfa, glm::vec3(1.0f, 0.0f, 0.0f));
+                /*glm::mat4 rX = glm::rotate(glm::mat4(1.0f), -alfa, glm::vec3(1.0f, 0.0f, 0.0f));
                 norm = glm::vec3(rX*glm::vec4(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f));
                 norm = glm::normalize(norm);
                 reflected = glm::reflect(accVers, norm);
-                bounceAcc = reflected * accIntensity;
+                bounceAcc = reflected * accIntensity;*/
+                ball.AccelerationTot.z = -ball.AccelerationTot.z;
             }
-        }*/
-        ball.AccelerationTot += bounceAcc;
+        }
+        //ball.AccelerationTot += bounceAcc;
         ball.bounce(leftFlipper);
         ball.bounce(rightFlipper);
+        //ball.bounce(bumper1);
+        //ball.bounce(bumper2);
+        //ball.bounce(bumper3);
     }
 
 };
