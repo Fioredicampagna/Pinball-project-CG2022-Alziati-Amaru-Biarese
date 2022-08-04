@@ -19,10 +19,11 @@ public:
     float   Radius;
     glm::vec3 AccelerationTot;
     glm::vec3 AccelerationGravity;
+    glm::vec3 Speed;
            
     // constructor(s)
-    BallObject(): GameObject(), Radius(12.5f), AccelerationTot(glm::vec3(0.0f))  { };
-    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, rotation, model), Radius(radius), AccelerationTot(glm::vec3(0.0f)) {};    // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
+    BallObject(): GameObject(), Radius(12.5f), AccelerationTot(glm::vec3(0.0f)), Speed(glm::vec3(0.0f))  { };
+    BallObject(glm::vec3 pos, float radius, glm::vec3 rotation, struct Model model): GameObject(pos, rotation, model), Radius(radius), AccelerationTot(glm::vec3(0.0f)),  Speed(glm::vec3(0.0f)) {};    // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
     //glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
     //void      Reset(glm::vec3 position, glm::vec2 velocity);
@@ -131,10 +132,9 @@ public:
             glm::vec3 reflected2 = glm::reflect(accVersor, norm);
             
             glm::vec3 bounceAcc = reflected * glm::length(glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot, 1.0)));
-             
+            
             bounceAcc = glm::vec3(other.transform * glm::vec4(bounceAcc, 1.0f));
-
-             
+          
             /*
             norm = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
 
@@ -156,14 +156,11 @@ public:
 
              
 
-            AccelerationTot += bounceAcc/10.0f;
+            AccelerationTot = bounceAcc;
 
-
-
-
-
-
-
+            /*Speed.x = 0.0f;
+            Speed.y = 0.0f;
+            Speed.z = 0.0f;*/
         }
     }
     

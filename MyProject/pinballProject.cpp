@@ -534,7 +534,7 @@ protected:
         
         updateModel(currentImage, DS_Ball, data, ubo, ball.Position, glm::vec3(0.0f, 0.0f, 0.0f));
 
-        std::cout << ball.Position.y << "\n";
+        std::cout << ball.Position.z << "\n";
     }
 
     void updateCamera(float deltaT)
@@ -659,15 +659,27 @@ protected:
         glm::vec3 bounceAcc = glm::vec3(0.0f, 0.0f, 0.0f);
 
         //float z = -5.9728f;
+        if(ball.AccelerationTot.x > 0)
+            ball.AccelerationTot.x = std::min(ball.AccelerationTot.x, 0.5f);
+        else
+            ball.AccelerationTot.x = std::max(ball.AccelerationTot.x, -0.5f);
+        if(ball.AccelerationTot.y > 0)
+            ball.AccelerationTot.y = std::min(ball.AccelerationTot.y, 0.5f);
+        else
+            ball.AccelerationTot.y = std::max(ball.AccelerationTot.y, -0.5f);
+        if(ball.AccelerationTot.z > 0)
+            ball.AccelerationTot.z = std::min(ball.AccelerationTot.z, 0.5f);
+        else
+            ball.AccelerationTot.z = std::max(ball.AccelerationTot.z, -0.5f);
 
-        dz = vz * dt + 0.5f *  ball.AccelerationTot.z * std::pow(dt, 2);
-        vz += 0.5f *  ball.AccelerationTot.z * dt;
+        dz = ball.Speed.z * dt + 0.5f *  ball.AccelerationTot.z * std::pow(dt, 2);
+        ball.Speed.z += 0.5f *  ball.AccelerationTot.z * dt;
 
-        dy = vy * dt + 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * std::pow(dt, 2);
-        vy += 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * dt;
+        dy = ball.Speed.y * dt + 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * std::pow(dt, 2);
+        ball.Speed.y += 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * dt;
 
-        dx = vx * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2);
-        vx += 0.5 * ball.AccelerationTot.x * dt;
+        dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2);
+        ball.Speed.x += 0.5 * ball.AccelerationTot.x * dt;
         
         ball.Position = glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -8.0f));
         accVers = glm::normalize(ball.AccelerationTot);
@@ -700,14 +712,15 @@ protected:
                 reflected = glm::reflect(accVers, norm);
                 bounceAcc = reflected * accIntensity;*/
                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
+                
             }
         }
-        //ball.AccelerationTot += bounceAcc;
+        //ball.AccelerationTot += ball.AccelerationGravity;
         ball.bounce(leftFlipper);
         ball.bounce(rightFlipper);
-        //ball.bounce(bumper1);
-        //ball.bounce(bumper2);
-        //ball.bounce(bumper3);
+        ball.bounce(bumper1);
+        ball.bounce(bumper2);
+        ball.bounce(bumper3);
     }
 
 };
