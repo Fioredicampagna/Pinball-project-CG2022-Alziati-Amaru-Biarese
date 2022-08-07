@@ -75,22 +75,21 @@ public:
     bool bounce(GameObject &other) {
         if(SphereRectCollision(other)){
             glm::vec3 relPosition = glm::vec3(glm::inverse(other.transform) * glm::vec4(this->Position, 1.0));
-            glm::vec3 fixPosition = relPosition;
-            glm::vec3 relPos2 = glm::vec3(other.transform * glm::vec4(relPosition, 1.0));
+            
             glm::vec3 distance = relPosition - other.CollisionBox.Center;
             glm::vec3 norm;
             glm::vec3 accVersor = glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot, 1.0));
             
             accVersor = glm::normalize(accVersor);
 
-            //float lengthD = glm::length(distance);
+            
            
 
             
 
 
 
-            //float relativeAngle = asin(distance.z / lengthD);
+            
             float relativeAngle = atan(distance.z / distance.x);
             
             float threshold1 = atan(( other.CollisionBox.Size.z / 2.0) / (- other.CollisionBox.Size.x / 2.0)); // upper left
@@ -121,9 +120,7 @@ public:
                 Speed.x = glm::sign(AccelerationTot.x)*Speed.x;
                 Speed.y = glm::sign(AccelerationTot.y)*Speed.y;
                 Speed.z = glm::sign(AccelerationTot.z)*Speed.z;
-            //Speed.x = 0.0f;//glm::sign(AccelerationTot.x)*Speed.x;
-            //Speed.y = 0.0f;//glm::sign(AccelerationTot.y)*Speed.y;
-            //Speed.z = 0.0f;//glm::sign(AccelerationTot.z)*Speed.z;
+            
             return true;
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2 && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z > other.CollisionBox.Center.z ) {
                 // caso lato lungo sopra
@@ -134,62 +131,27 @@ public:
 
             
             
-            float dot = glm::dot(norm, accVersor);
-            
-            glm::vec3 reflected = accVersor - 2.0f * norm * dot;
+            //float dot = glm::dot(norm, accVersor);
+            //glm::vec3 reflected = accVersor - 2.0f * norm * dot;
 
-            float d1 = glm::length(norm);
-            float d2 = glm::length(accVersor);
+            
             glm::vec3 reflected2 = glm::reflect(accVersor, norm);
             glm::vec3 normWorld = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
             reflected2 = glm::reflect(glm::normalize(AccelerationTot), normWorld);
-            //glm::vec3 distanceWorld = glm::vec3(other.transform * glm::vec4(distance, 1.0f));
-           // fixPosition = glm::vec3(other.CollisionBox.Size.x/2.0f, other.CollisionBox.Size.y/2.0f, other.CollisionBox.Size.z/2.0f);
-            //glm::vec3 fixVersor = glm::vec3(-glm::normalize(AccelerationTot).x, -glm::normalize(AccelerationTot).y, -glm::normalize(AccelerationTot).z);
-            //fixPosition = glm::length(distanceWorld)*fixVersor;
-            //glm::vec3(other.transform * glm::vec4(distance, 1.0f));
-            //fixPosition = glm::vec3(other.transform * glm::vec4(fixPosition, 1.0f));
-            //----------------------------------------------------------------------------------------
-            //glm::vec3 bounceAcc = reflected * glm::length(glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot, 1.0)));
             
-            //bounceAcc = glm::vec3(other.transform * glm::vec4(bounceAcc, 1.0f));
+            
             //------------------------------------------------------------------------------------------------
             glm::vec3 bounceAcc = glm::length(AccelerationTot)*glm::normalize(reflected2);
-            /*
-            norm = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
-
-            norm = glm::normalize(norm);
             
-            glm::vec3 accVersorWorld = glm::normalize(AccelerationTot);
-            
-            float dot = glm::dot(norm, accVersorWorld);
-
-            glm::vec3 reflected = accVersorWorld - 2.0f * norm * dot;
-            
-            glm::vec3 bounceAcc = reflected * glm::length(AccelerationTot); */
-            
-          //  std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
             std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
             std::cout<< "\n";
-            //Position.x += -glm::sign(AccelerationTot.x)*std::abs(fixPosition.x);
-            //Position.y += -glm::sign(AccelerationTot.z)*std::abs(fixPosition.z*sin(alfa)/cos(alfa));
-            //Position.z += -glm::sign(AccelerationTot.z)*std::abs(fixPosition.z);
             
-            //Position.x += fixPosition.x;
-            //Position.y += fixPosition.z*sin(alfa)/cos(alfa);
-            //Position.z -= fixPosition.z;
-
-            //bounceAcc.x = -bounceAcc.x;
-
-             
+    
 
             AccelerationTot = bounceAcc;
             Speed.x = glm::sign(AccelerationTot.x)*Speed.x;
             Speed.y = glm::sign(AccelerationTot.y)*Speed.y;
             Speed.z = glm::sign(AccelerationTot.z)*Speed.z;
-            //Speed.x = 0.0f;//glm::sign(AccelerationTot.x)*Speed.x;
-            //Speed.y = 0.0f;//glm::sign(AccelerationTot.y)*Speed.y;
-            //Speed.z = 0.0f;//glm::sign(AccelerationTot.z)*Speed.z;
             return true;
         }
         return false;
