@@ -239,6 +239,7 @@ protected:
 
         ball.AccelerationGravity.y = apiano * sin(alfa);
         ball.AccelerationGravity.z = apiano * cos(alfa);
+        ball.AccelerationGravity.x = 0.01f;
 
         ball.AccelerationTot = ball.AccelerationGravity;
        
@@ -660,8 +661,8 @@ protected:
         glm::vec3 bounceAcc = glm::vec3(0.0f, 0.0f, 0.0f);
 
         //float z = -5.9728f;
-        if(ball.AccelerationTot.x > 0)
-            ball.AccelerationTot.x = std::min(ball.AccelerationTot.x, 0.5f);
+        /*if(ball.AccelerationTot.x > 0)
+            ball.AccelerationTot.x = std::min(ball.AccelerationTot.x, 1.0f);
         else
             ball.AccelerationTot.x = std::max(ball.AccelerationTot.x, -0.5f);
         if(ball.AccelerationTot.y > 0)
@@ -671,7 +672,7 @@ protected:
         if(ball.AccelerationTot.z > 0)
             ball.AccelerationTot.z = std::min(ball.AccelerationTot.z, 0.5f);
         else
-            ball.AccelerationTot.z = std::max(ball.AccelerationTot.z, -0.5f);
+            ball.AccelerationTot.z = std::max(ball.AccelerationTot.z, -0.5f);*/
 
         dz = ball.Speed.z * dt + 0.5f *  ball.AccelerationTot.z * std::pow(dt, 2);
         ball.Speed.z += 0.5f *  ball.AccelerationTot.z * dt;
@@ -697,28 +698,27 @@ protected:
         
         
         ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
-        accVers = glm::normalize(ball.AccelerationTot);
-        accIntensity = glm::length(ball.AccelerationTot);
+
         if(ball.Position.x >= 2.3465f){
             /*norm = glm::vec3(-1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);
             bounceAcc = reflected * accIntensity;
             ball.AccelerationTot.x = 0.0f; */
             ball.Position.x = 2.3465f;
-            ball.Speed.x = 0.0f;
-            ball.Speed.y = 0.0f;
-            ball.Speed.z = 0.0f;
             ball.AccelerationTot.x = - ball.AccelerationTot.x;
+            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
+            ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
+            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
         }else if(ball.Position.x <= -2.7434f){
             /*norm = glm::vec3(1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);
             bounceAcc = reflected * accIntensity;
             ball.AccelerationTot.x = 0.0f;*/
             ball.Position.x = -2.7434f;
-            ball.Speed.x = 0.0f;
-            ball.Speed.y = 0.0f;
-            ball.Speed.z = 0.0f;
             ball.AccelerationTot.x = - ball.AccelerationTot.x;
+            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
+            ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
+            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
         }else if(ball.Position.z >= 4.1008f){
             /*glm::mat4 rX = glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(1.0f, 0.0f, 0.0f));
             norm = glm::vec3(rX*glm::vec4(glm::vec3(0.0f, 0.0f, -1.0f), 0.0f));
@@ -726,10 +726,11 @@ protected:
             reflected = glm::reflect(accVers, norm);
             bounceAcc = reflected * accIntensity;*/
             ball.Position.z = 4.1008f;
-            ball.Speed.x = 0.0f;
-            ball.Speed.y = 0.0f;
-            ball.Speed.z = 0.0f;
             ball.AccelerationTot.z = - ball.AccelerationTot.z;
+            ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa);
+            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
+            ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
+            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
         }else if(ball.Position.z <= -5.4828f){
             if((ball.Position.x >= -2.7434f && ball.Position.x <= -1.563f) ||
             (ball.Position.x <= 2.3465f && ball.Position.x >= 0.9115f)){
@@ -739,19 +740,22 @@ protected:
                 reflected = glm::reflect(accVers, norm);
                 bounceAcc = reflected * accIntensity;*/
                 ball.Position.z = -5.4828f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
-                
+                ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa);
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
             }
         }
+        
         ball.bounce(leftFlipper);
         ball.bounce(rightFlipper);
-        ball.bounce(bumper1);
+        //if(ball.bounce(bumper1)){
+         //   printf("Dolore");
+       // }
         ball.bounce(bumper2);
         ball.bounce(bumper3);
-           
+        
     }
 
 };

@@ -97,16 +97,17 @@ public:
         
             
             if((relativeAngle >= threshold1 && relativeAngle < threshold2) && relPosition.x < other.CollisionBox.Center.x){
-                // caso lato corto sinistra
-                printf("lato corto sinistra\n");
+                // caso lato corto destra
+                printf("lato corto destra\n");
 
                 norm = glm::vec3(-1.0f, 0.0f, 0.0f);
 
             } else if((relativeAngle >= threshold1 && relativeAngle < threshold2) && relPosition.x > other.CollisionBox.Center.x){
-                // caso lato corto destra
-                printf("lato corto destra\n");
+                // caso lato corto sinistra
+                printf("lato corto sinistra\n");
 
                 norm = glm::vec3(1.0f, 0.0f, 0.0f);
+                
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2  && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z < other.CollisionBox.Center.z ) {
                 // caso lato lungo sotto
                 printf("lato lungo sotto\n");
@@ -117,9 +118,9 @@ public:
                 glm::vec3 bounceAcc = glm::length(AccelerationTot)*glm::normalize(reflected2);
                 bounceAcc.z = -bounceAcc.z;
                 AccelerationTot = bounceAcc;
-                Speed.x = glm::sign(AccelerationTot.x)*Speed.x;
-                Speed.y = glm::sign(AccelerationTot.y)*Speed.y;
-                Speed.z = glm::sign(AccelerationTot.z)*Speed.z;
+                Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
+                Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y);
+                Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
             
             return true;
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2 && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z > other.CollisionBox.Center.z ) {
@@ -149,9 +150,9 @@ public:
     
 
             AccelerationTot = bounceAcc;
-            Speed.x = glm::sign(AccelerationTot.x)*Speed.x;
-            Speed.y = glm::sign(AccelerationTot.y)*Speed.y;
-            Speed.z = glm::sign(AccelerationTot.z)*Speed.z;
+            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
+            Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y);
+            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
             return true;
         }
         return false;
