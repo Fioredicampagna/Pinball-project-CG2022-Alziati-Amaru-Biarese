@@ -203,6 +203,7 @@ protected:
         
         bumper3 = GameObject(glm::vec3(-0.11626f, 9.1362f, 0.020626f), glm::vec3(-6.51f, 0.0f, 0.0f), M_Bumper);
         bumper3.CollisionBox.getSize(bumper3.Model);
+        bumper3.CollisionBox.Size = glm::vec3(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,1.5f,1.0f)) * glm::vec4(bumper3.CollisionBox.Size, 1.0f));
         
         M_Puller.init(this, MODEL_PATH + "Puller.obj");
         DS_Puller.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
@@ -747,16 +748,16 @@ protected:
         }
         //ball.AccelerationTot += ball.AccelerationGravity;
         if(ball.bounce(leftFlipper)){
-            dx = 0.1f*glm::sign(ball.AccelerationTot.x);
+           /* dx = 0.1f*glm::sign(ball.AccelerationTot.x);
             dz = dx*(std::abs(ball.AccelerationTot.z/ball.AccelerationTot.x))*glm::sign(ball.AccelerationTot.z);
             dy = dz*sin(alfa)/cos(alfa);
-            ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
+            ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));*/
         }
         if(ball.bounce(rightFlipper)){
-            dx = 0.1f*glm::sign(ball.AccelerationTot.x);
+            /*dx = 0.1f*glm::sign(ball.AccelerationTot.x);
             dz = dx*(std::abs(ball.AccelerationTot.z/ball.AccelerationTot.x))*glm::sign(ball.AccelerationTot.z);
             dy = dz*sin(alfa)/cos(alfa);
-            ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
+            ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));*/
         }
         /*if(ball.bounce(bumper1)){
             dx = 0.1f*glm::sign(ball.AccelerationTot.x);
@@ -771,10 +772,10 @@ protected:
             ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
         }*/
         if(ball.bounce(bumper3)){
-            dx = 0.1f*glm::sign(ball.AccelerationTot.x);
+            /*dx = 0.07f*glm::sign(ball.AccelerationTot.x);
             dz = dx*(std::abs(ball.AccelerationTot.z/ball.AccelerationTot.x))*glm::sign(ball.AccelerationTot.z);
             dy = dz*sin(alfa)/cos(alfa);
-            ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
+            ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));*/
         }
     }
 
