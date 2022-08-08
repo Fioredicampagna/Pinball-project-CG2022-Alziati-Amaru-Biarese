@@ -709,6 +709,9 @@ protected:
             ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
             ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
             ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+            ball.Speed.x = 0.0f;
+            ball.Speed.y = 0.0f;
+            ball.Speed.z = 0.0f;
         }else if(ball.Position.x <= -2.7434f){
             /*norm = glm::vec3(1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);
@@ -719,6 +722,9 @@ protected:
             ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
             ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
             ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+            ball.Speed.x = 0.0f;
+            ball.Speed.y = 0.0f;
+            ball.Speed.z = 0.0f;
         }else if(ball.Position.z >= 4.1008f){
             /*glm::mat4 rX = glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(1.0f, 0.0f, 0.0f));
             norm = glm::vec3(rX*glm::vec4(glm::vec3(0.0f, 0.0f, -1.0f), 0.0f));
@@ -731,6 +737,9 @@ protected:
             ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
             ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
             ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+            ball.Speed.x = 0.0f;
+            ball.Speed.y = 0.0f;
+            ball.Speed.z = 0.0f;
         }else if(ball.Position.z <= -5.4828f){
             if((ball.Position.x >= -2.7434f && ball.Position.x <= -1.563f) ||
             (ball.Position.x <= 2.3465f && ball.Position.x >= 0.9115f)){
@@ -745,6 +754,9 @@ protected:
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
                 ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
             }
         }
 
@@ -754,97 +766,108 @@ protected:
 
         bool checkLateral = true;
             //check if is hitting top (if is in the upper part of the bumper)
-        if( ball.Position.z <= BUMPER_UPPER_ BOUND && ball.Position.z >= BUMPER_CENTER_Z )
+        if( ball.Position.z <= bumper1.Position.z + bumper1.CollisionBox.Size.z/2.0f && ball.Position.z >= bumper1.Position.z)
         {
             //check if is "inside" the area of one of the bumper 
-            if(ball.Position.x <= BUMPER1_LEFT && ball.Position.x >= BUMPER1_RIGHT
-                || ball.Position.x <= BUMPER2_LEFT && ball.Position.x >= BUMPER2_RIGHT 
-                    || ball.Position.x <= BUMPER3_LEFT && ball.Position.x >= BUMPER3_RIGHT){
+            if(ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f
+                || ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f 
+                    || ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f){
 
-
-                ball.Position.z = BUMPER_UPPER_ BOUND;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
-                ball.AccelerationTot.z = -ball.AccelerationTot.z; 
-                checkLateral = false;
-
+                if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x)
+                        || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
+                        || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x)
+                        || (ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x)
+                        || (ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x)
+                        || (ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x))){
+                                ball.Position.z = bumper1.Position.z + bumper1.CollisionBox.Size.z/2.0f;
+                                ball.Speed.x = 0.0f;
+                                ball.Speed.y = 0.0f;
+                                ball.Speed.z = 0.0f;
+                                ball.AccelerationTot.z = -ball.AccelerationTot.z; 
+                                checkLateral = false;
+                        }
                         
             }
             
                  //check if is hitting bottom 
         }
         
-        else if(ball.Position.z >= BUMPER_LOWER_BOUND && ball.Position.z <= BUMPER_CENTER_Z)
+        else if(ball.Position.z >= bumper1.Position.z - bumper1.CollisionBox.Size.z/2.0f && ball.Position.z <= bumper1.Position.z)
         {
              //check if is "inside" the area of one of the bumper 
 
-             if(ball.Position.x <= BUMPER1_LEFT && ball.Position.x >= BUMPER1_RIGHT
-                || ball.Position.x <= BUMPER2_LEFT && ball.Position.x >= BUMPER2_RIGHT 
-                    || ball.Position.x <= BUMPER3_LEFT && ball.Position.x >= BUMPER3_RIGHT){
+             if(ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f
+                || ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f 
+                    || ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f){
 
-
-                ball.Position.z = BUMPER_LOWER_BOUND;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
-                ball.AccelerationTot.z = -ball.AccelerationTot.z; 
-                checkLateral = false;
-
+                if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x)
+                        || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
+                        || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x)
+                        || (ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x)
+                        || (ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x)
+                        || (ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x))){            
+                                ball.Position.z = bumper1.Position.z - bumper1.CollisionBox.Size.z/2.0f;
+                                ball.Speed.x = 0.0f;
+                                ball.Speed.y = 0.0f;
+                                ball.Speed.z = 0.0f;
+                                ball.AccelerationTot.z = -ball.AccelerationTot.z; 
+                                checkLateral = false;
+                }
+                        
             }
 
         }
         
-        if(checkLateral)
+        if(checkLateral && ball.Position.z >= bumper1.Position.z - bumper1.CollisionBox.Size.z/2.0f && ball.Position.z <= bumper1.Position.z + bumper1.CollisionBox.Size.z/2.0f)
         {
             // -----X----->
-            if(ball.Position.x <= BUMPER1_LEFT &&  ball.Position.x >= BUMPER1_CENTER_X)
+            if(ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x)
             {
-                ball.Position.x = BUMPER1_LEFT;
+                ball.Position.x = bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f;
                 ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
 
-            }else if(ball.Position.x <= BUMPER2_LEFT &&  ball.Position.x >= BUMPER2_CENTER_X)
+            }else if(ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
             {
-                ball.Position.x = BUMPER2_LEFT;
+                ball.Position.x = bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f;
                 ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
 
-            }else if(ball.Position.x <= BUMPER3_LEFT &&  ball.Position.x >= BUMPER3_CENTER_X)
+            }else if(ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x)
             {
 
-                ball.Position.x = BUMPER3_LEFT;
+                ball.Position.x = bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f;
                 ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
 
-            }else if(ball.Position.x >= BUMPER1_RIGHT && ball.Position.x <= BUMPER1_CENTER_X )
+            }else if(ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x )
             {
 
-                ball.Position.x = BUMPER1_RIGHT;
+                ball.Position.x = bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f;
                 ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
 
-            }else if(ball.Position.x >= BUMPER2_RIGHT && ball.Position.x <= BUMPER2_CENTER_X)
+            }else if(ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x)
             {
 
-                ball.Position.x = BUMPER2_RIGHT;
+                ball.Position.x = bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f;
                 ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
 
-            }else if(ball.Position.x >= BUMPER3_RIGHT && ball.Position.x <= BUMPER3_CENTER_X)
+            }else if(ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x)
             {   
 
-                ball.Position.x = BUMPER3_RIGHT;
+                ball.Position.x = bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f;
                 ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;
@@ -859,8 +882,8 @@ protected:
         //if(ball.bounce(bumper1)){
          //   printf("Dolore");
        // }
-        ball.bounce(bumper2);
-        ball.bounce(bumper3);
+        //ball.bounce(bumper2);
+        //ball.bounce(bumper3);
         
     }
 

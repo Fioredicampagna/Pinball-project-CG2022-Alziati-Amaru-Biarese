@@ -118,9 +118,9 @@ public:
                 glm::vec3 bounceAcc = glm::length(AccelerationTot)*glm::normalize(reflected2);
                 bounceAcc.z = -bounceAcc.z;
                 AccelerationTot = bounceAcc;
-                Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
-                Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y);
-                Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
+                Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x)/1.5f;
+                Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y)/1.5f;
+                Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)/1.5f;
             
             return true;
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2 && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z > other.CollisionBox.Center.z ) {
@@ -150,9 +150,9 @@ public:
     
 
             AccelerationTot = bounceAcc;
-            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
-            Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y);
-            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
+            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x)/1.5f;
+            Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y)/1.5f;
+            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)/1.5f;
             return true;
         }
         return false;
