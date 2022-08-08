@@ -747,6 +747,112 @@ protected:
                 ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
             }
         }
+
+
+        //bumper controll
+        //----------------------------------------------------------------------------
+
+        bool checkLateral = true;
+            //check if is hitting top (if is in the upper part of the bumper)
+        if( ball.Position.z <= BUMPER_UPPER_ BOUND && ball.Position.z >= BUMPER_CENTER_Z )
+        {
+            //check if is "inside" the area of one of the bumper 
+            if(ball.Position.x <= BUMPER1_LEFT && ball.Position.x >= BUMPER1_RIGHT
+                || ball.Position.x <= BUMPER2_LEFT && ball.Position.x >= BUMPER2_RIGHT 
+                    || ball.Position.x <= BUMPER3_LEFT && ball.Position.x >= BUMPER3_RIGHT){
+
+
+                ball.Position.z = BUMPER_UPPER_ BOUND;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.z = -ball.AccelerationTot.z; 
+                checkLateral = false;
+
+                        
+            }
+            
+                 //check if is hitting bottom 
+        }
+        
+        else if(ball.Position.z >= BUMPER_LOWER_BOUND && ball.Position.z <= BUMPER_CENTER_Z)
+        {
+             //check if is "inside" the area of one of the bumper 
+
+             if(ball.Position.x <= BUMPER1_LEFT && ball.Position.x >= BUMPER1_RIGHT
+                || ball.Position.x <= BUMPER2_LEFT && ball.Position.x >= BUMPER2_RIGHT 
+                    || ball.Position.x <= BUMPER3_LEFT && ball.Position.x >= BUMPER3_RIGHT){
+
+
+                ball.Position.z = BUMPER_LOWER_BOUND;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.z = -ball.AccelerationTot.z; 
+                checkLateral = false;
+
+            }
+
+        }
+        
+        if(checkLateral)
+        {
+            // -----X----->
+            if(ball.Position.x <= BUMPER1_LEFT &&  ball.Position.x >= BUMPER1_CENTER_X)
+            {
+                ball.Position.x = BUMPER1_LEFT;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.x = - ball.AccelerationTot.x;
+
+            }else if(ball.Position.x <= BUMPER2_LEFT &&  ball.Position.x >= BUMPER2_CENTER_X)
+            {
+                ball.Position.x = BUMPER2_LEFT;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.x = - ball.AccelerationTot.x;
+
+            }else if(ball.Position.x <= BUMPER3_LEFT &&  ball.Position.x >= BUMPER3_CENTER_X)
+            {
+
+                ball.Position.x = BUMPER3_LEFT;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.x = - ball.AccelerationTot.x;
+
+            }else if(ball.Position.x >= BUMPER1_RIGHT && ball.Position.x <= BUMPER1_CENTER_X )
+            {
+
+                ball.Position.x = BUMPER1_RIGHT;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.x = - ball.AccelerationTot.x;
+
+            }else if(ball.Position.x >= BUMPER2_RIGHT && ball.Position.x <= BUMPER2_CENTER_X)
+            {
+
+                ball.Position.x = BUMPER2_RIGHT;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.x = - ball.AccelerationTot.x;
+
+            }else if(ball.Position.x >= BUMPER3_RIGHT && ball.Position.x <= BUMPER3_CENTER_X)
+            {   
+
+                ball.Position.x = BUMPER3_RIGHT;
+                ball.Speed.x = 0.0f;
+                ball.Speed.y = 0.0f;
+                ball.Speed.z = 0.0f;
+                ball.AccelerationTot.x = - ball.AccelerationTot.x;
+
+            }
+        }
+
         
         ball.bounce(leftFlipper);
         ball.bounce(rightFlipper);
