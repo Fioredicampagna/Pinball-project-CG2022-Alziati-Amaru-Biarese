@@ -113,7 +113,7 @@ public:
                 printf("lato lungo sotto\n");
 
                 norm = glm::vec3(0.0f, 0.0f, -1.0f);
-                glm::vec3 normWorld = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
+                /*glm::vec3 normWorld = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
                 glm::vec3 reflected2 = glm::reflect(glm::normalize(AccelerationTot), normWorld);
                 glm::vec3 bounceAcc = glm::length(AccelerationTot)*glm::normalize(reflected2);
                 bounceAcc.z = -bounceAcc.z;
@@ -122,7 +122,7 @@ public:
                 Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y)/1.5f;
                 Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)/1.5f;
             
-            return true;
+            return true;*/
             } else if(((relativeAngle >= -glm::pi<float>() / 2.0f && relativeAngle < threshold1) || (relativeAngle >= threshold2 && relativeAngle < glm::pi<float>() / 2.0f)) && relPosition.z > other.CollisionBox.Center.z ) {
                 // caso lato lungo sopra
                 printf("lato lungo sopra\n");
@@ -137,9 +137,9 @@ public:
 
             
             glm::vec3 reflected2 = glm::reflect(accVersor, norm);
-            glm::vec3 normWorld = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
-            reflected2 = glm::reflect(glm::normalize(AccelerationTot), normWorld);
-            
+            //glm::vec3 normWorld = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
+            //reflected2 = glm::reflect(glm::normalize(AccelerationTot), normWorld);
+            reflected2 =  glm::vec3(other.transform * glm::vec4(reflected2, 1.0));
             
             //------------------------------------------------------------------------------------------------
             glm::vec3 bounceAcc = glm::length(AccelerationTot)*glm::normalize(reflected2);
@@ -150,9 +150,9 @@ public:
     
 
             AccelerationTot = bounceAcc;
-            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x)/1.5f;
-            Speed.y = glm::sign(AccelerationTot.y)*std::abs(Speed.y)/1.5f;
-            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)/1.5f;
+            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x)/1.75f;
+            Speed.y = glm::sign(AccelerationTot.z)*std::abs(Speed.y)/1.75f;
+            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)/1.75f;
             return true;
         }
         return false;
