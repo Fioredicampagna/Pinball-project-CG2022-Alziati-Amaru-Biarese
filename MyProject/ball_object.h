@@ -150,9 +150,9 @@ public:
     
 
             AccelerationTot = bounceAcc;
-            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x)/1.75f;
-            Speed.y = glm::sign(AccelerationTot.z)*std::abs(Speed.y)/1.75f;
-            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)/1.75f;
+            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
+            Speed.y = glm::sign(AccelerationTot.z)*std::abs(Speed.y);
+            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
             return true;
         }
         return false;

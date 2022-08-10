@@ -239,13 +239,13 @@ protected:
         
         ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
         ball.getRadius();
-        float apiano = 0.049f * sin(alfa);
+        float apiano = 0.49f * sin(alfa);
 
         ball.AccelerationGravity.y = apiano * sin(alfa);
         ball.AccelerationGravity.z = apiano * cos(alfa);
-        ball.AccelerationGravity.x = 0.01f;
 
         ball.AccelerationTot = ball.AccelerationGravity;
+        ball.AccelerationTot.x = 0.1f;
        
         M_Score.init(this, MODEL_PATH + "DL6.obj");
         DS_DL1.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
@@ -679,10 +679,10 @@ protected:
         else
             ball.AccelerationTot.z = std::max(ball.AccelerationTot.z, -0.5f);*/
 
-        dz = ball.Speed.z * dt + 0.5f *  ball.AccelerationTot.z * std::pow(dt, 2);
+        dz = ball.Speed.z * dt + 0.5f *  (ball.AccelerationTot.z + ball.AccelerationGravity.z)* std::pow(dt, 2);
         ball.Speed.z += 0.5f *  ball.AccelerationTot.z * dt;
 
-        dy = ball.Speed.y * dt + 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * std::pow(dt, 2);
+        dy = ball.Speed.y * dt + 0.5 * (ball.AccelerationTot.z*sin(alfa)/cos(alfa) + ball.AccelerationGravity.y) * std::pow(dt, 2);
         ball.Speed.y += 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * dt;
 
         dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2);
@@ -782,17 +782,14 @@ protected:
                 || ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f 
                     || ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f){
 
-                if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x)
-                        || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
-                        || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x)
-                        || (ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x)
-                        || (ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x)
-                        || (ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x))){
+                if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f - 0.1f) 
+                        || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f -0.1f)
+                        || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f -0.1f)
+                        || (ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f + 0.1f)
+                        || (ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f + 0.1f)
+                        || (ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f + 0.1f))){
                                 ball.Position.z = bumper1.Position.z + bumper1.CollisionBox.Size.z/2.0f;
                                 ball.Position.y = bumper1.Position.y + bumper1.CollisionBox.Size.z/2.0f*sin(alfa)/cos(alfa);
-                                ball.Speed.x = 0.0f;
-                                ball.Speed.y = 0.0f;
-                                ball.Speed.z = 0.0f;
                                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
                                 ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa); 
                                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
@@ -814,17 +811,14 @@ protected:
                 || ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f 
                     || ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f){
 
-                if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x)
-                        || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
-                        || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x)
-                        || (ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x)
-                        || (ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x)
-                        || (ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x))){            
+                if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f - 0.1f) 
+                        || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f -0.1f)
+                        || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f -0.1f)
+                        || (ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f + 0.1f)
+                        || (ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f + 0.1f)
+                        || (ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f + 0.1f))){           
                                 ball.Position.z = bumper1.Position.z - bumper1.CollisionBox.Size.z/2.0f;
                                 ball.Position.y = bumper1.Position.y - bumper1.CollisionBox.Size.z/2.0f*sin(alfa)/cos(alfa);
-                                ball.Speed.x = 0.0f;
-                                ball.Speed.y = 0.0f;
-                                ball.Speed.z = 0.0f;
                                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
                                 ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa); 
                                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
@@ -843,9 +837,6 @@ protected:
             if(ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x)
             {
                 ball.Position.x = bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
@@ -854,9 +845,6 @@ protected:
             }else if(ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
             {
                 ball.Position.x = bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
@@ -866,9 +854,6 @@ protected:
             {
 
                 ball.Position.x = bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
@@ -878,9 +863,6 @@ protected:
             {
 
                 ball.Position.x = bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
@@ -890,9 +872,6 @@ protected:
             {
 
                 ball.Position.x = bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
@@ -902,9 +881,6 @@ protected:
             {   
 
                 ball.Position.x = bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f;
-                ball.Speed.x = 0.0f;
-                ball.Speed.y = 0.0f;
-                ball.Speed.z = 0.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
                 ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
                 ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
