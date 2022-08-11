@@ -18,6 +18,7 @@ public:
     // ball state
     float alfa = 0.1288712254f;	
     float   Radius;
+    bool inGame = false;
     glm::vec3 AccelerationTot;
     glm::vec3 AccelerationGravity;
     glm::vec3 Speed;

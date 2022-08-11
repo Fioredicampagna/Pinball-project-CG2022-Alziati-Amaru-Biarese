@@ -51,9 +51,14 @@ protected:
     bool buttonRightPressed = false;
 
     float alfa = 0.1288712254f;
+    float ballStartz = -5.4828f + ball.Radius + 0.03;
+    float ballStartx = -2.5264f;
+    float ballStarty = 8.4032f + std::abs(ballStartz - -5.9728f) * std::tan(alfa);
+    /*
     float ballStartz = 3.9f;
     float ballStartx = 0.0f;
     float ballStarty = 8.4032f + std::abs(ballStartz - -5.9728f) * std::tan(alfa);
+    */
     
     float dz = 0.0f;
     float dy = 0.0f;
@@ -372,7 +377,8 @@ protected:
            &&!ball.SphereRectCollision(bumper1) && !ball.SphereRectCollision(bumper2) && !ball.SphereRectCollision(bumper3)) {
             updateBallPosition();
         } */
-        updateBallPosition();
+        if(ball.inGame)
+            updateBallPosition();
         
         
         
@@ -585,6 +591,7 @@ protected:
     }
     
     void updatePuller(){
+        glm::vec3 k = glm::vec3(5.0f, 5.0f * tan(alfa), 5.0f);
         // Logica del tiraggio del puller
         if (glfwGetKey(window, GLFW_KEY_SPACE))
         {
@@ -594,6 +601,14 @@ protected:
         }
         else
         {
+            
+            if(ball.inGame == false)
+            {
+                 ball.inGame = true;
+
+                ball.AccelerationTot =  k * pullerState;
+            }
+           
             pullerActualPosition = pullerActualPosition + 0.1 * pullerState;
             pullerActualPosition = std::min(pullerActualPosition, pullerStartingPosition);
             pullerState -= speed;
