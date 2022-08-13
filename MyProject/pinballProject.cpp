@@ -249,8 +249,6 @@ protected:
         ball.AccelerationGravity.y = apiano * sin(alfa);
         ball.AccelerationGravity.z = apiano * cos(alfa);
 
-        ball.AccelerationTot = ball.AccelerationGravity;
-        ball.AccelerationTot.x = 0.1f;
        
         M_Score.init(this, MODEL_PATH + "DL6.obj");
         DS_DL1.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
@@ -695,24 +693,24 @@ protected:
             ball.AccelerationTot.z = std::max(ball.AccelerationTot.z, -0.5f);*/
 
         dz = ball.Speed.z * dt + 0.5f *  (ball.AccelerationTot.z + ball.AccelerationGravity.z)* std::pow(dt, 2) 
-                        -glm::sign(ball.Speed.z)*std::abs(ball.AccelerationTot.z)*0.9f* std::pow(dt, 2);
+                        -glm::sign(ball.Speed.z)*std::abs(0.7f)* std::pow(dt, 2);
         ball.Speed.z += 0.5f *  ball.AccelerationTot.z * dt;
 
         dy = ball.Speed.y * dt + 0.5 * (ball.AccelerationTot.z*sin(alfa)/cos(alfa) + ball.AccelerationGravity.y) * std::pow(dt, 2)
-                     -glm::sign(ball.Speed.z)*std::abs(ball.AccelerationTot.z*tan(alfa))*0.9f* std::pow(dt, 2);
+                     -glm::sign(ball.Speed.z)*std::abs(0.7f*tan(alfa))* std::pow(dt, 2);
         ball.Speed.y += 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * dt;
 
-        dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2) -glm::sign(ball.Speed.x)*std::abs(ball.AccelerationTot.x)*0.9f* std::pow(dt, 2);
+        dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2) -glm::sign(ball.Speed.x)*std::abs(0.7f*ball.AccelerationTot.z/ball.AccelerationTot.x)* std::pow(dt, 2);
         ball.Speed.x += 0.5 * ball.AccelerationTot.x * dt;
         float r = std::abs(dx/dz);
         if(dx > 0)
-            dx = std::min(dx, 0.015f);
+            dx = std::min(dx, 0.007f);
         else
-            dx = std::max(dx, -0.015f);
+            dx = std::max(dx, -0.007f);
         if(dz > 0)
-            dz = std::min(dz, 0.015f/r);
+            dz = std::min(dz, 0.007f/r);
         else
-            dz = std::max(dz, -0.015f/r);
+            dz = std::max(dz, -0.007f/r);
         if(dy > 0)
             dy = std::min(dy, dz*sin(alfa)/cos(alfa));
         else
