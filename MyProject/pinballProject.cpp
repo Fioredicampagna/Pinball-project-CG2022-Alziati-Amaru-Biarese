@@ -51,7 +51,7 @@ protected:
     bool buttonRightPressed = false;
 
     float alfa = 0.1288712254f;
-    float ballStartz = -5.4828f + ball.Radius + 0.03;
+    float ballStartz = -5.4828f + 0.03;
     float ballStartx = -2.5264f;
     float ballStarty = 8.4032f + std::abs(ballStartz - -5.9728f) * std::tan(alfa);
     /*
@@ -244,6 +244,7 @@ protected:
         
         ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
         ball.getRadius();
+        ball.Position.z += ball.Radius;
         float apiano = 0.49f * sin(alfa);
 
         ball.AccelerationGravity.y = apiano * sin(alfa);
@@ -672,11 +673,11 @@ protected:
 
         float dt = 0.3f;
         float tempDy;
-        float accIntensity;
+        /* float accIntensity;
         glm::vec3 norm;
         glm::vec3 accVers;
         glm::vec3 reflected;
-        glm::vec3 bounceAcc = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 bounceAcc = glm::vec3(0.0f, 0.0f, 0.0f); */
 
         //float z = -5.9728f;
         /*if(ball.AccelerationTot.x > 0)
@@ -785,7 +786,7 @@ protected:
                 ball.inGame = false;
                 ball.Position.x = ballStartx;
                 ball.Position.y = ballStarty;
-                ball.Position.z = ballStartz;
+                ball.Position.z = ballStartz + ball.Radius;
                 ball.Speed = glm::vec3(0.0f);
                 ball.AccelerationTot = glm::vec3(0.0f);
             }
@@ -800,9 +801,9 @@ protected:
         if( ball.Position.z <= bumper1.Position.z + bumper1.CollisionBox.Size.z/2.0f && ball.Position.z >= bumper1.Position.z)
         {
             //check if is "inside" the area of one of the bumper 
-            if(ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f
-                || ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f 
-                    || ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f){
+            if((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f)
+               || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f)
+               || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f)){
 
                 if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f - 0.1f) 
                         || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f -0.1f)
@@ -829,9 +830,9 @@ protected:
         {
              //check if is "inside" the area of one of the bumper 
 
-             if(ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f
-                || ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f 
-                    || ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f){
+            if((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f)
+                || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f)
+                || (ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f && ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f)){
 
                 if(!((ball.Position.x <= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f - 0.1f) 
                         || (ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f -0.1f)
