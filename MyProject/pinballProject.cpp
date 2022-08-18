@@ -88,6 +88,8 @@ protected:
     Pipeline P1;
 
     // Models, textures and Descriptors (values assigned to the uniforms)
+    Model M_Pub;
+    DescriptorSet DS_Pub;
 
     // 00: Pinball Texture: needs to be loaded just once, shared between every object
     Texture T_Pinball;
@@ -265,6 +267,9 @@ protected:
         DS_DR5.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_DR6.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
 
+        M_Pub.init(this, MODEL_PATH + "pub.obj", MODEL_PATH);
+        DS_Pub.init(this,&DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}});
+
         DS_global.init(this, &DSLglobal, {{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr}});
     }
 
@@ -310,6 +315,9 @@ protected:
         T_Pinball.cleanup();
         DS_global.cleanup();
 
+        M_Pub.cleanup();
+        DS_Pub.cleanup();
+
         P1.cleanup();
         DSLglobal.cleanup();
         DSLobj.cleanup();
@@ -329,6 +337,8 @@ protected:
                                 0, nullptr);
 
         drawModel(commandBuffer, currentImage, M_PinballBody, DS_PinballBody, P1);
+
+        drawModel(commandBuffer, currentImage, M_Pub, DS_Pub, P1);
 
         drawModelInstanced(commandBuffer, currentImage, M_Bumper, DS_Bumper_Array, P1, 3);
 
@@ -477,6 +487,13 @@ protected:
         mapAndUnmap(currentImage, DS, data, ubo);
     }
     
+    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation,  glm::vec3 scale)
+    {
+        ubo.model = MakeWorldMatrixEuler(position, rotation, scale);
+        
+        mapAndUnmap(currentImage, DS, data, ubo);
+    }
+
     void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, GameObject &object)
     {
         ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
@@ -491,6 +508,9 @@ protected:
         // Pinball Body
         
         updateModel(currentImage, DS_PinballBody, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+
+        //Pub body
+        updateModel(currentImage, DS_Pub, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(5.0f));
         
         // bumper 1
         
