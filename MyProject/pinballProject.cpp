@@ -4,8 +4,10 @@
 #include "game_object.h"
 #include "ball_object.h"
 
+const std::string ROOM_PATH = "models/Room/";
 const std::string MODEL_PATH = "models/PinballDark/";
 const std::string TEXTURE_PATH = "textures/StarWarsPinball.png";
+const std::string TEXTURE_ROOM_PATH = "textures/Room/";
 
 // The uniform buffer object used in this example
 struct globalUniformBufferObject
@@ -88,8 +90,7 @@ protected:
     Pipeline P1;
 
     // Models, textures and Descriptors (values assigned to the uniforms)
-    Model M_Pub;
-    DescriptorSet DS_Pub;
+
 
     // 00: Pinball Texture: needs to be loaded just once, shared between every object
     Texture T_Pinball;
@@ -143,6 +144,33 @@ protected:
 
     DescriptorSet DS_global;
 
+
+    Model M_Floor;
+    DescriptorSet DS_Floor;
+    Texture T_Floor;
+
+    Model M_Wall;
+    DescriptorSet DS_Wall;
+    Texture T_Wall;
+
+    Model M_Ceiling;
+    DescriptorSet DS_Ceiling;
+    Texture T_Ceiling;
+
+    Model M_Door;
+    DescriptorSet DS_Door;
+    Texture T_Door;
+
+    Model M_Carpet;
+    DescriptorSet DS_Carpet;
+    Texture T_Carpet;
+
+    Model M_Sky;
+    DescriptorSet DS_Sky;
+    Texture T_Sky;
+
+
+
    // game objects
     
     GameObject bumper1, bumper2, bumper3, leftFlipper, rightFlipper, puller;
@@ -158,9 +186,9 @@ protected:
         initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
         // Descriptor pool sizes
-        uniformBlocksInPool = 24;
-        texturesInPool = 24;
-        setsInPool = 24;
+        uniformBlocksInPool = 30;
+        texturesInPool = 30;
+        setsInPool = 30;
     }
 
     // Here you load and setup all your Vulkan objects
@@ -267,10 +295,37 @@ protected:
         DS_DR5.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_DR6.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
 
-        M_Pub.init(this, MODEL_PATH + "pub.obj");
-        DS_Pub.init(this,&DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}});
+
+        
+        M_Floor.init(this, ROOM_PATH + "floor.obj");
+        T_Floor.init(this, TEXTURE_ROOM_PATH + "floor.png");
+        DS_Floor.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr},{1, TEXTURE, 0, &T_Floor}});
+
+        M_Ceiling.init(this, ROOM_PATH + "ceiling.obj");
+        T_Ceiling.init(this, TEXTURE_ROOM_PATH + "ceiling.jpg");
+        DS_Ceiling.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr},{1, TEXTURE, 0, &T_Ceiling}});
+
+        M_Wall.init(this, ROOM_PATH + "walls.obj");
+        T_Wall.init(this, TEXTURE_ROOM_PATH + "walls.jpg");
+        DS_Wall.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr},{1, TEXTURE, 0, &T_Wall}});
+
+        M_Door.init(this, ROOM_PATH + "door.obj");
+        T_Door.init(this, TEXTURE_ROOM_PATH + "door.jpg");
+        DS_Door.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr},{1, TEXTURE, 0, &T_Door}});
+
+        M_Carpet.init(this, ROOM_PATH + "carpet.obj");
+        T_Carpet.init(this, TEXTURE_ROOM_PATH + "carpet.jpg");
+        DS_Carpet.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr},{1, TEXTURE, 0, &T_Carpet}});
+
+        M_Sky.init(this, ROOM_PATH + "sky.obj");
+        T_Sky.init(this, TEXTURE_ROOM_PATH + "sky.jpg");
+        DS_Sky.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr},{1, TEXTURE, 0, &T_Sky}});
+
 
         DS_global.init(this, &DSLglobal, {{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr}});
+        
+        
+
     }
 
     // Here you destroy all the objects you created!
@@ -315,8 +370,30 @@ protected:
         T_Pinball.cleanup();
         DS_global.cleanup();
 
-        M_Pub.cleanup();
-        DS_Pub.cleanup();
+        T_Floor.cleanup();
+        M_Floor.cleanup();        
+        DS_Floor.cleanup();
+
+        T_Ceiling.cleanup();
+        M_Ceiling.cleanup();        
+        DS_Ceiling.cleanup();
+
+        T_Wall.cleanup();
+        M_Wall.cleanup();        
+        DS_Wall.cleanup();
+
+        T_Door.cleanup();
+        M_Door.cleanup();        
+        DS_Door.cleanup();
+
+        T_Carpet.cleanup();
+        M_Carpet.cleanup();        
+        DS_Carpet.cleanup();
+
+        T_Sky.cleanup();
+        M_Sky.cleanup();        
+        DS_Sky.cleanup();
+
 
         P1.cleanup();
         DSLglobal.cleanup();
@@ -338,8 +415,6 @@ protected:
 
         drawModel(commandBuffer, currentImage, M_PinballBody, DS_PinballBody, P1);
 
-        drawModel(commandBuffer, currentImage, M_Pub, DS_Pub, P1);
-
         drawModelInstanced(commandBuffer, currentImage, M_Bumper, DS_Bumper_Array, P1, 3);
 
         drawModel(commandBuffer, currentImage, M_Puller, DS_Puller, P1);
@@ -351,6 +426,14 @@ protected:
         drawModelInstanced(commandBuffer, currentImage, M_Score, DS_Score_Array, P1, 12);
 
         drawModel(commandBuffer, currentImage, M_Ball, DS_Ball, P1);
+
+        drawModel(commandBuffer,currentImage, M_Floor,DS_Floor, P1 );
+        drawModel(commandBuffer,currentImage, M_Ceiling,DS_Ceiling, P1 );
+        drawModel(commandBuffer,currentImage, M_Door,DS_Door, P1 );
+        drawModel(commandBuffer,currentImage, M_Wall,DS_Wall, P1 );
+        drawModel(commandBuffer,currentImage, M_Door,DS_Door, P1 );
+        drawModel(commandBuffer,currentImage, M_Sky,DS_Sky, P1 );
+        
     }
 
     
@@ -487,13 +570,6 @@ protected:
         mapAndUnmap(currentImage, DS, data, ubo);
     }
     
-    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation,  glm::vec3 scale)
-    {
-        ubo.model = MakeWorldMatrixEuler(position, rotation, scale);
-        
-        mapAndUnmap(currentImage, DS, data, ubo);
-    }
-
     void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, GameObject &object)
     {
         ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
@@ -508,9 +584,6 @@ protected:
         // Pinball Body
         
         updateModel(currentImage, DS_PinballBody, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
-
-        //Pub body
-        updateModel(currentImage, DS_Pub, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(5.0f));
         
         // bumper 1
         
@@ -559,6 +632,14 @@ protected:
         updateModel(currentImage, DS_DR5, data, ubo, glm::vec3(-1.5958f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
         updateModel(currentImage, DS_DR6, data, ubo, glm::vec3(-1.316f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
         
+
+        updateModel(currentImage, DS_Floor, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        updateModel(currentImage, DS_Ceiling, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        updateModel(currentImage, DS_Wall, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        updateModel(currentImage, DS_Door, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        updateModel(currentImage, DS_Carpet, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        updateModel(currentImage, DS_Sky, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+
         
         
         // ball
