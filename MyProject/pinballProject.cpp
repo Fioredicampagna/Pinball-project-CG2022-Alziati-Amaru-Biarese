@@ -267,7 +267,7 @@ protected:
         DS_DR5.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
         DS_DR6.init(this, &DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}, {1, TEXTURE, 0, &T_Pinball}});
 
-        M_Pub.init(this, MODEL_PATH + "pub.obj", MODEL_PATH);
+        M_Pub.init(this, MODEL_PATH + "pub.obj");
         DS_Pub.init(this,&DSLobj, {{0, UNIFORM, sizeof(UniformBufferObject), nullptr}});
 
         DS_global.init(this, &DSLglobal, {{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr}});
