@@ -640,12 +640,12 @@ protected:
         updateModel(currentImage, DS_DR6, data, ubo, glm::vec3(-1.316f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
         
 
-        updateModel(currentImage, DS_Floor, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
-        updateModel(currentImage, DS_Ceiling, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
-        updateModel(currentImage, DS_Wall, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
-        updateModel(currentImage, DS_Door, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
-        updateModel(currentImage, DS_Carpet, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f, 12.0f, 10.0f));
-        updateModel(currentImage, DS_Sky, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Floor, data, ubo, glm::vec3(0.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Ceiling, data, ubo, glm::vec3(0.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Wall, data, ubo, glm::vec3(0.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Door, data, ubo, glm::vec3(0.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Carpet, data, ubo, glm::vec3(0.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(10.0f, 12.0f, 10.0f));
+        updateModel(currentImage, DS_Sky, data, ubo, glm::vec3(0.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(10.0f));
 
         
         
