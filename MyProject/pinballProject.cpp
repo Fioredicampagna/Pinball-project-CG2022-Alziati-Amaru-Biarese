@@ -183,7 +183,7 @@ protected:
         windowWidth = 800;
         windowHeight = 600;
         windowTitle = "Pinball";
-        initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
         // Descriptor pool sizes
         uniformBlocksInPool = 30;
@@ -429,7 +429,7 @@ protected:
 
         drawModel(commandBuffer,currentImage, M_Floor,DS_Floor, P1 );
         drawModel(commandBuffer,currentImage, M_Ceiling,DS_Ceiling, P1 );
-        drawModel(commandBuffer,currentImage, M_Door,DS_Door, P1 );
+        drawModel(commandBuffer,currentImage, M_Carpet,DS_Carpet, P1 );
         drawModel(commandBuffer,currentImage, M_Wall,DS_Wall, P1 );
         drawModel(commandBuffer,currentImage, M_Door,DS_Door, P1 );
         drawModel(commandBuffer,currentImage, M_Sky,DS_Sky, P1 );
@@ -570,6 +570,13 @@ protected:
         mapAndUnmap(currentImage, DS, data, ubo);
     }
     
+    void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+    {
+        ubo.model = MakeWorldMatrixEuler(position, rotation, scale);
+
+        mapAndUnmap(currentImage, DS, data, ubo);
+    }
+    
     void updateModel(int currentImage, DescriptorSet DS, void *data, UniformBufferObject ubo, glm::vec3 position, glm::vec3 rotation, GameObject &object)
     {
         ubo.model = MakeWorldMatrixEuler(position, rotation, glm::vec3(1.0f));
@@ -633,12 +640,12 @@ protected:
         updateModel(currentImage, DS_DR6, data, ubo, glm::vec3(-1.316f, 12.789f, 4.1852f), glm::vec3(0.0f, -101.0f, 0.0f));
         
 
-        updateModel(currentImage, DS_Floor, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
-        updateModel(currentImage, DS_Ceiling, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
-        updateModel(currentImage, DS_Wall, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
-        updateModel(currentImage, DS_Door, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
-        updateModel(currentImage, DS_Carpet, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
-        updateModel(currentImage, DS_Sky, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f));
+        updateModel(currentImage, DS_Floor, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Ceiling, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Wall, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Door, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
+        updateModel(currentImage, DS_Carpet, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f, 12.0f, 10.0f));
+        updateModel(currentImage, DS_Sky, data, ubo, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
 
         
         
