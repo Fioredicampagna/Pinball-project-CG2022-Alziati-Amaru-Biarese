@@ -489,6 +489,10 @@ protected:
                                      swapChainExtent.width / (float)swapChainExtent.height,
                                      0.1f, 100.0f);
         gubo.proj[1][1] *= -1;
+        
+        gubo.lightPos = glm::vec3(0.0f, 10.0f, -2.0f);
+        gubo.lightColor = glm::vec3(1.0f, 1.0f, 0.73f);
+        gubo.lightParameters = glm::vec2(2.0f, 0.3f);
 
         vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
                     sizeof(gubo), 0, &data);
