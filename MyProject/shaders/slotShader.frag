@@ -1,10 +1,19 @@
 #version 450
 
+layout(set = 0, binding = 0) uniform globalUniformBufferObject {
+	mat4 view;
+	mat4 proj;
+	vec3 lightPos;
+    vec3 lightColor; 
+    vec2 lightParameters;
+} gubo;
+
 layout(set=1, binding = 1) uniform sampler2D texSampler;
 
 layout(location = 0) in vec3 fragViewDir;
 layout(location = 1) in vec3 fragNorm;
 layout(location = 2) in vec2 fragTexCoord;
+layout(location = 3) in vec3 fragPos;
 
 layout(location = 0) out vec4 outColor;
 
@@ -17,7 +26,7 @@ void main() {
 	vec3 N = normalize(fragNorm);
 	vec3 R = -reflect(L, N);
 	vec3 V = normalize(fragViewDir);
-	
+	diffColor = 
 	// Lambert diffuse
 	vec3 diffuse  = diffColor * max(dot(N,L), 0.0f) * 1.5f;
 	// Phong specular
