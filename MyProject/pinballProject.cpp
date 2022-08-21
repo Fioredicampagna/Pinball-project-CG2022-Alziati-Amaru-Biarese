@@ -79,7 +79,7 @@ protected:
     float lookYaw = 0.0f;
     float lookPitch = 0.0f;
     glm::vec3 FollowerDeltaTarget = cameraPos - pinballPos;
-    const float ROT_SPEED = glm::radians(0.5f);
+    const float ROT_SPEED = glm::radians(60.0f);
     float followerDist = 0.6;
 
     // Here you list all the Vulkan objects you need:
@@ -452,7 +452,7 @@ protected:
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         static float lastTime = 0.0f;
         float deltaT = time - lastTime;
-
+        lastTime = time;
         // static float debounce = time;
 
        
@@ -668,28 +668,28 @@ protected:
         // camera update
         if (glfwGetKey(window, GLFW_KEY_RIGHT))
         {
-            // lookYaw += deltaT * ROT_SPEED;
-            lookYaw += ROT_SPEED;
+             lookYaw += deltaT * ROT_SPEED;
+            //lookYaw += ROT_SPEED;
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT))
         {
-            // lookYaw -= deltaT * ROT_SPEED;
-            lookYaw -= ROT_SPEED;
+             lookYaw -= deltaT * ROT_SPEED;
+            //lookYaw -= ROT_SPEED;
         }
         if (glfwGetKey(window, GLFW_KEY_ENTER))
         {
             lookYaw = 0.0f;
-        } /*
+        } 
          if (glfwGetKey(window, GLFW_KEY_UP))
          {
-             //lookPitch += deltaT * ROT_SPEED;
-             lookPitch += ROT_SPEED;
+             lookPitch += deltaT * ROT_SPEED;
+             //lookPitch += ROT_SPEED;
          }
          if (glfwGetKey(window, GLFW_KEY_DOWN))
          {
-             //lookPitch -= deltaT * ROT_SPEED;
-             lookPitch -= ROT_SPEED;
-         } */
+             lookPitch -= deltaT * ROT_SPEED;
+             //lookPitch -= ROT_SPEED;
+         } 
         
         glm::vec3 FollowerTargetPos;
 
