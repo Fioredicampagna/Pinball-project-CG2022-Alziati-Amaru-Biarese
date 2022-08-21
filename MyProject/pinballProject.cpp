@@ -260,11 +260,11 @@ protected:
          
         leftFlipper = GameObject(glm::vec3(0.6906f, 8.4032f, -5.6357f), glm::vec3(leftFlipperRotation, -3.24f, -5.64f), M_Flipper);
         leftFlipper.CollisionBox.getSize(leftFlipper.Model);
-        leftFlipper.CollisionBox.Size = glm::vec3(glm::scale(glm::mat4(1.0f), glm::vec3(1.25f,1.25f,1.25f)) * glm::vec4(leftFlipper.CollisionBox.Size, 1.0f));
+        leftFlipper.CollisionBox.Size = glm::vec3(glm::scale(glm::mat4(1.0f), glm::vec3(0.8f,1.0f,1.0f)) * glm::vec4(leftFlipper.CollisionBox.Size, 1.0f));
 
         rightFlipper = GameObject(glm::vec3(-1.307f, 8.4032f, -5.6357f), glm::vec3(rightFlipperRotation, -3.24f, -5.64f), M_Flipper);
         rightFlipper.CollisionBox.getSize(rightFlipper.Model);
-        rightFlipper.CollisionBox.Size = glm::vec3(glm::scale(glm::mat4(1.0f), glm::vec3(1.25f,1.25f,1.25f)) * glm::vec4(rightFlipper.CollisionBox.Size, 1.0f));
+        rightFlipper.CollisionBox.Size = glm::vec3(glm::scale(glm::mat4(1.0f), glm::vec3(0.8f,1.0f,1.0f)) * glm::vec4(rightFlipper.CollisionBox.Size, 1.0f));
  
         
         M_Button.init(this, MODEL_PATH + "RightButton.obj");
@@ -819,13 +819,13 @@ protected:
         ball.Speed.x += 0.5 * ball.AccelerationTot.x * dt;
         float r = std::abs(dx/dz);
         if(dx > 0)
-            dx = std::min(dx, 0.007f);
+            dx = std::min(dx, 0.017f);
         else
-            dx = std::max(dx, -0.007f);
+            dx = std::max(dx, -0.017f);
         if(dz > 0)
-            dz = std::min(dz, 0.007f/r);
+            dz = std::min(dz, 0.017f/r);
         else
-            dz = std::max(dz, -0.007f/r);
+            dz = std::max(dz, -0.017f/r);
         if(dy > 0)
             dy = std::min(dy, dz*sin(alfa)/cos(alfa));
         else
