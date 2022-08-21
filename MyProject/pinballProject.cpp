@@ -704,7 +704,7 @@ protected:
     }
     
     void updatePuller(){
-        glm::vec3 k =glm::vec3(4.0f, -12.0f * tan(alfa), -12.0f);
+        glm::vec3 k =glm::vec3(8.0f, -24.0f * tan(alfa), -24.0f);
         // Logica del tiraggio del puller
         if (glfwGetKey(window, GLFW_KEY_SPACE))
         {
@@ -720,6 +720,7 @@ protected:
                 ball.inGame = true;
 
                 ball.AccelerationTot =  pullerState * k ;
+                 
             }
            
             pullerActualPosition = pullerActualPosition + 0.1 * pullerState;
@@ -806,16 +807,19 @@ protected:
             ball.AccelerationTot.z = std::min(ball.AccelerationTot.z, 0.5f);
         else
             ball.AccelerationTot.z = std::max(ball.AccelerationTot.z, -0.5f);*/
+        float friction = 1.0f;
+        glm::vec3 frictionVector = glm::vec3(-glm::sign(ball.Speed.x)*std::abs(friction*ball.AccelerationTot.z/ball.AccelerationTot.x),-glm::sign(ball.Speed.z)*std::abs(friction*tan(alfa)), -glm::sign(ball.Speed.z)*std::abs(friction));
+
 
         dz = ball.Speed.z * dt + 0.5f *  (ball.AccelerationTot.z + ball.AccelerationGravity.z)* std::pow(dt, 2) 
-                        -glm::sign(ball.Speed.z)*std::abs(0.7f)* std::pow(dt, 2);
+                        -glm::sign(ball.Speed.z)*std::abs(friction)* std::pow(dt, 2);
         ball.Speed.z += 0.5f *  ball.AccelerationTot.z * dt;
 
         dy = ball.Speed.y * dt + 0.5 * (ball.AccelerationTot.z*sin(alfa)/cos(alfa) + ball.AccelerationGravity.y) * std::pow(dt, 2)
-                     -glm::sign(ball.Speed.z)*std::abs(0.7f*tan(alfa))* std::pow(dt, 2);
+                     -glm::sign(ball.Speed.z)*std::abs(friction*tan(alfa))* std::pow(dt, 2);
         ball.Speed.y += 0.5 * ball.AccelerationTot.z*sin(alfa)/cos(alfa) * dt;
 
-        dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2) -glm::sign(ball.Speed.x)*std::abs(0.7f*ball.AccelerationTot.z/ball.AccelerationTot.x)* std::pow(dt, 2);
+        dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2) -glm::sign(ball.Speed.x)*std::abs(friction*ball.AccelerationTot.z/ball.AccelerationTot.x)* std::pow(dt, 2);
         ball.Speed.x += 0.5 * ball.AccelerationTot.x * dt;
         float r = std::abs(dx/dz);
         /*if(dx > 0)
@@ -833,7 +837,8 @@ protected:
         
         */
         ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
-
+        float dumping = 0.9f;
+        float speedDump = 0.75f;
         if(ball.Position.x >= 2.3465f){
             /*norm = glm::vec3(-1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);
@@ -841,9 +846,10 @@ protected:
             ball.AccelerationTot.x = 0.0f; */
             ball.Position.x = 2.3465f;
             ball.AccelerationTot.x = - ball.AccelerationTot.x;
-            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-            ball.Speed.y = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.y);
-            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+            ball.AccelerationTot *= dumping;
+            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+            ball.Speed.y = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.y)*speedDump;
+            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
             /*ball.Speed.x = 0.0f;
             ball.Speed.y = 0.0f;
             ball.Speed.z = 0.0f;*/
@@ -854,9 +860,10 @@ protected:
             ball.AccelerationTot.x = 0.0f;*/
             ball.Position.x = -2.7434f;
             ball.AccelerationTot.x = - ball.AccelerationTot.x;
-            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-            ball.Speed.y = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.y);
-            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+            ball.AccelerationTot *= dumping;
+            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+            ball.Speed.y = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.y)*speedDump;
+            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
             /*ball.Speed.x = 0.0f;
             ball.Speed.y = 0.0f;
             ball.Speed.z = 0.0f;*/
@@ -871,9 +878,10 @@ protected:
             ball.Position.y = std::max(ball.Position.y - tempDy, 8.4032f);
             ball.AccelerationTot.z = - ball.AccelerationTot.z;
             ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa);
-            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-            ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+            ball.AccelerationTot *= dumping;
+            ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+            ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+            ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
             /*ball.Speed.x = 0.0f;
             ball.Speed.y = 0.0f;
             ball.Speed.z = 0.0f;*/
@@ -890,9 +898,10 @@ protected:
                 ball.Position.y = std::max(ball.Position.y - tempDy, 8.4032f);
                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
                 ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa);
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                ball.AccelerationTot *= dumping;
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;;
                 /*ball.Speed.x = 0.0f;
                 ball.Speed.y = 0.0f;
                 ball.Speed.z = 0.0f;*/
@@ -929,10 +938,12 @@ protected:
                                 ball.Position.y = bumper1.Position.y + bumper1.CollisionBox.Size.z/2.0f*sin(alfa)/cos(alfa);
                                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
                                 ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa); 
-                                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;;
+                                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;;
+                                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;;
                                 checkLateral = false;
+                             //   ball.AccelerationTot *= dumping;
+                                
                         }
                         
             }
@@ -958,10 +969,11 @@ protected:
                                 ball.Position.y = bumper1.Position.y - bumper1.CollisionBox.Size.z/2.0f*sin(alfa)/cos(alfa);
                                 ball.AccelerationTot.z = -ball.AccelerationTot.z;
                                 ball.AccelerationTot.y = ball.AccelerationTot.z*sin(alfa)/cos(alfa); 
-                                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;;
+                                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;;
+                                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;;
                                 checkLateral = false;
+                              //  ball.AccelerationTot *= dumping;
                 }
                         
             }
@@ -975,54 +987,57 @@ protected:
             {
                 ball.Position.x = bumper1.Position.x + bumper1.CollisionBox.Size.x/2.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
+                //ball.AccelerationTot *= dumping;
 
             }else if(ball.Position.x <= bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper2.Position.x)
             {
                 ball.Position.x = bumper2.Position.x + bumper2.CollisionBox.Size.x/2.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
+                //ball.AccelerationTot *= dumping;
 
             }else if(ball.Position.x <= bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f &&  ball.Position.x >= bumper3.Position.x)
             {
 
                 ball.Position.x = bumper3.Position.x + bumper3.CollisionBox.Size.x/2.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
+               // ball.AccelerationTot *= dumping;
 
             }else if(ball.Position.x >= bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper1.Position.x )
             {
 
                 ball.Position.x = bumper1.Position.x - bumper1.CollisionBox.Size.x/2.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
-
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
+               // ball.AccelerationTot *= dumping;
             }else if(ball.Position.x >= bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper2.Position.x)
             {
 
                 ball.Position.x = bumper2.Position.x - bumper2.CollisionBox.Size.x/2.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
-
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
+              //  ball.AccelerationTot *= dumping;
             }else if(ball.Position.x >= bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f && ball.Position.x <= bumper3.Position.x)
             {   
 
                 ball.Position.x = bumper3.Position.x - bumper3.CollisionBox.Size.x/2.0f;
                 ball.AccelerationTot.x = - ball.AccelerationTot.x;
-                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x);
-                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y);
-                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z);
-
+                ball.Speed.x = glm::sign(ball.AccelerationTot.x)*std::abs(ball.Speed.x)*speedDump;
+                ball.Speed.y = glm::sign(ball.AccelerationTot.y)*std::abs(ball.Speed.y)*speedDump;
+                ball.Speed.z = glm::sign(ball.AccelerationTot.z)*std::abs(ball.Speed.z)*speedDump;
+              //  ball.AccelerationTot *= dumping;
             }
         }
 

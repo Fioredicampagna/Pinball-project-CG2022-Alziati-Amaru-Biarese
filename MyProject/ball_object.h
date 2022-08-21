@@ -74,12 +74,21 @@ public:
     }
     
     bool bounce(GameObject &other) {
+
+
+
+
         if(SphereRectCollision(other)){
+
+            float friction = 1.0f;
+            glm::vec3 frictionVector = glm::vec3(-glm::sign(Speed.x)*std::abs(friction*AccelerationTot.z/AccelerationTot.x),-glm::sign(Speed.z)*std::abs(friction*tan(alfa)), -glm::sign(Speed.z)*std::abs(friction));
+
+
             glm::vec3 relPosition = glm::vec3(glm::inverse(other.transform) * glm::vec4(this->Position, 1.0));
             
             glm::vec3 distance = relPosition - other.CollisionBox.Center;
             glm::vec3 norm;
-            glm::vec3 accVersor = glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot, 1.0));
+            glm::vec3 accVersor = glm::vec3(glm::inverse(other.transform) * glm::vec4(AccelerationTot + AccelerationGravity + frictionVector, 1.0));
             
             accVersor = glm::normalize(accVersor);
 
@@ -137,20 +146,20 @@ public:
             //glm::vec3 reflected = accVersor - 2.0f * norm * dot;
 
             
-            glm::vec3 reflected2 = glm::reflect(accVersor, norm);
+            glm::vec3 reflected2 = -glm::reflect(accVersor, norm);
             //glm::vec3 normWorld = glm::vec3(other.transform * glm::vec4(norm, 1.0f));
             //reflected2 = glm::reflect(glm::normalize(AccelerationTot), normWorld);
             reflected2 =  glm::vec3(other.transform * glm::vec4(reflected2, 1.0));
             
             //------------------------------------------------------------------------------------------------
-            glm::vec3 bounceAcc = glm::length(AccelerationTot)*glm::normalize(reflected2);
+            glm::vec3 bounceAcc = glm::length(AccelerationTot + AccelerationGravity + frictionVector)*glm::normalize(reflected2);
             
             std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
             std::cout<< "\n";
             
     
 
-            AccelerationTot = bounceAcc;
+            AccelerationTot = bounceAcc * 0.5f;
             Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
             Speed.y = glm::sign(AccelerationTot.z)*std::abs(Speed.y);
             Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
