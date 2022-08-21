@@ -211,7 +211,7 @@ protected:
         // Pipelines [Shader couples]
         // The last array, is a vector of pointer to the layouts of the sets that will
         // be used in this pipeline. The first element will be set 0, and so on..
-        P1.init(this, "shaders/slotVert.spv", "shaders/slotFrag.spv", {&DSLglobal, &DSLobj});
+        P1.init(this, "shaders/pinballVert.spv", "shaders/pinballFrag.spv", {&DSLglobal, &DSLobj});
 
         // Models, textures and Descriptors (values assigned to the uniforms)
         M_PinballBody.init(this, MODEL_PATH + "Body.obj");
