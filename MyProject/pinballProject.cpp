@@ -277,7 +277,7 @@ protected:
         ball = BallObject(glm::vec3(ballStartx + dx, std::max(ballStarty - dy, 8.4032f), std::max(ballStartz - dz, -5.6352f)), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), M_Ball );
         ball.getRadius();
         ball.Position.z += ball.Radius;
-        float apiano = 0.49f * sin(alfa);
+        float apiano = 9.8f * sin(alfa);
 
         ball.AccelerationGravity.y = apiano * sin(alfa);
         ball.AccelerationGravity.z = apiano * cos(alfa);
@@ -472,7 +472,7 @@ protected:
             updateBallPosition();
         } */
         if(ball.inGame)
-            updateBallPosition();
+            updateBallPosition(deltaT);
         
         
         
@@ -704,7 +704,7 @@ protected:
     }
     
     void updatePuller(){
-        glm::vec3 k = glm::vec3(-0.2f, -0.6f * tan(alfa), -0.6f);
+        glm::vec3 k =glm::vec3(4.0f, -12.0f * tan(alfa), -12.0f);
         // Logica del tiraggio del puller
         if (glfwGetKey(window, GLFW_KEY_SPACE))
         {
@@ -782,10 +782,10 @@ protected:
     }
 
     
-    void updateBallPosition()
+    void updateBallPosition(float deltaT)
     {
 
-        float dt = 0.3f;
+        float dt = deltaT;
         float tempDy;
         /* float accIntensity;
         glm::vec3 norm;
@@ -818,7 +818,7 @@ protected:
         dx = ball.Speed.x * dt + 0.5 * ball.AccelerationTot.x * std::pow(dt, 2) -glm::sign(ball.Speed.x)*std::abs(0.7f*ball.AccelerationTot.z/ball.AccelerationTot.x)* std::pow(dt, 2);
         ball.Speed.x += 0.5 * ball.AccelerationTot.x * dt;
         float r = std::abs(dx/dz);
-        if(dx > 0)
+        /*if(dx > 0)
             dx = std::min(dx, 0.017f);
         else
             dx = std::max(dx, -0.017f);
@@ -831,7 +831,7 @@ protected:
         else
             dy = std::max(dy, dz*sin(alfa)/cos(alfa));
         
-        
+        */
         ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
 
         if(ball.Position.x >= 2.3465f){
