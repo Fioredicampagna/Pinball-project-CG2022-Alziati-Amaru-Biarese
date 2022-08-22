@@ -705,6 +705,8 @@ protected:
     
     void updatePuller(){
         glm::vec3 k =glm::vec3(8.0f, -24.0f * tan(alfa), -24.0f);
+        glm::vec3 kvel =glm::vec3(8.0f, -24.0f * tan(alfa), -24.0f);
+
         // Logica del tiraggio del puller
         if (glfwGetKey(window, GLFW_KEY_SPACE))
         {
@@ -720,7 +722,8 @@ protected:
                 ball.inGame = true;
 
                 ball.AccelerationTot =  pullerState * k ;
-                 
+                ball.Speed =  pullerState * kvel ;
+               
             }
            
             pullerActualPosition = pullerActualPosition + 0.1 * pullerState;
@@ -837,8 +840,8 @@ protected:
         
         */
         ball.Position = glm::vec3(ball.Position.x + dx, std::max(ball.Position.y - dy, 8.4032f), std::max(ball.Position.z - dz, -8.0f));
-        float dumping = 0.9f;
-        float speedDump = 0.75f;
+        float dumping = 0.95f;
+        float speedDump = 0.9f;
         if(ball.Position.x >= 2.3465f){
             /*norm = glm::vec3(-1.0f, 0.0f, 0.0f);
             reflected = glm::reflect(accVers, norm);

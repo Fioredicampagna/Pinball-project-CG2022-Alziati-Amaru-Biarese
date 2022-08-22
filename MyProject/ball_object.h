@@ -80,7 +80,7 @@ public:
 
         if(SphereRectCollision(other)){
 
-            float friction = 1.0f;
+            float friction = 0.3f;
             glm::vec3 frictionVector = glm::vec3(-glm::sign(Speed.x)*std::abs(friction*AccelerationTot.z/AccelerationTot.x),-glm::sign(Speed.z)*std::abs(friction*tan(alfa)), -glm::sign(Speed.z)*std::abs(friction));
 
 
@@ -153,16 +153,17 @@ public:
             
             //------------------------------------------------------------------------------------------------
             glm::vec3 bounceAcc = glm::length(AccelerationTot + AccelerationGravity + frictionVector)*glm::normalize(reflected2);
-            
+            bounceAcc.y = bounceAcc.z *tan(alfa);
             std::cout << bounceAcc.x << bounceAcc.y <<bounceAcc.z << "\n";
             std::cout<< "\n";
             
     
 
-            AccelerationTot = bounceAcc * 0.5f;
-            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x);
-            Speed.y = glm::sign(AccelerationTot.z)*std::abs(Speed.y);
-            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z);
+            AccelerationTot = bounceAcc * 1.2f;
+            float speedIncrease = 1.2f;
+            Speed.x = glm::sign(AccelerationTot.x)*std::abs(Speed.x)*speedIncrease;
+            Speed.y = glm::sign(AccelerationTot.z)*std::abs(Speed.y)*speedIncrease;
+            Speed.z = glm::sign(AccelerationTot.z)*std::abs(Speed.z)*speedIncrease;
             return true;
         }
         return false;
