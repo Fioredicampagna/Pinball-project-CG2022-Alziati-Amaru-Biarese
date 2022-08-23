@@ -458,8 +458,9 @@ protected:
        
 
 
-         /* glm::vec3 RFDT = glm::vec3(glm::rotate(glm::mat4(1), lookYaw, glm::vec3(0, 1, 0)) *
-                                    glm::vec4(FollowerDeltaTarget, 1.0f));*/
+         glm::vec3 RFDT = glm::vec3(glm::rotate(glm::mat4(1), lookYaw, glm::vec3(0, 1, 0)) *
+                                    glm::vec4(FollowerDeltaTarget, 1.0f));
+
         updateCamera(deltaT);
 
         updatePuller();
@@ -481,9 +482,8 @@ protected:
         UniformBufferObject ubo{};
 
         void *data;
-
         gubo.view = glm::lookAt(cameraPos,
-                                pinballPos /*+ RFDT*/,
+                                pinballPos , //+ RFDT,
                                 glm::vec3(0.0f, 1.0f, 0.0f));
         gubo.proj = glm::perspective(glm::radians(45.0f),
                                      swapChainExtent.width / (float)swapChainExtent.height,
@@ -659,7 +659,7 @@ protected:
         
         updateModel(currentImage, DS_Ball, data, ubo, ball.Position, glm::vec3(0.0f, 0.0f, 0.0f));
 
-        std::cout << ball.Position.z << "\n";
+        //std::cout << ball.Position.z << "\n";
     }
 
     void updateCamera(float deltaT)
@@ -679,24 +679,38 @@ protected:
         if (glfwGetKey(window, GLFW_KEY_ENTER))
         {
             lookYaw = 0.0f;
+            lookPitch = 0.0f;
+
         } 
          if (glfwGetKey(window, GLFW_KEY_UP))
          {
              lookPitch += deltaT * ROT_SPEED;
+            lookPitch = std::min(lookPitch, 0.347744f);
              //lookPitch += ROT_SPEED;
          }
          if (glfwGetKey(window, GLFW_KEY_DOWN))
          {
              lookPitch -= deltaT * ROT_SPEED;
              //lookPitch -= ROT_SPEED;
+            lookPitch = std::max(lookPitch, -0.645724f);
+
          } 
+
         
         glm::vec3 FollowerTargetPos;
+        glm::mat4 pinballWM; /* = glm::rotate(glm::translate(glm::mat4(1), pinballPos),
+                                          lookYaw, glm::vec3(0, 1, 0));*/
+        std::cout << lookPitch << '\n';
+        
+        pinballWM = glm::translate(glm::mat4(1), pinballPos);    
+        pinballWM = glm::rotate(glm::mat4(1), lookYaw,
+                           glm::vec3(0, 1, 0)) * pinballWM;
+        pinballWM = glm::rotate(glm::mat4(1), lookPitch,
+                           glm::vec3(1, 0, 0)) * pinballWM;
+                                         
 
-        glm::mat4 pinballWM = glm::rotate(glm::translate(glm::mat4(1), pinballPos),
-                                          lookYaw, glm::vec3(0, 1, 0));
         FollowerTargetPos = pinballWM * glm::translate(glm::mat4(1), FollowerDeltaTarget) *
-                            glm::rotate(glm::mat4(1), lookPitch, glm::vec3(1, 0, 0)) *
+                            //glm::rotate(glm::mat4(1), lookPitch, glm::vec3(1, 0, 0)) *//
                             glm::vec4(0.0f, 0.0f, followerDist, 1.0f);
         const float followerFilterCoeff = 7;
         float alpha = fmin(followerFilterCoeff * deltaT, 1.0f);
